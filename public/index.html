@@ -167,7 +167,8 @@ function renderShop(){document.getElementById("shopList").innerHTML=shopItems.ma
 function renderAchievements(){document.getElementById("achievementsList").innerHTML=achievements.map(a=>'<div class="row"><b>'+a.name+'</b><span class="'+(a.check()?'done':'pill')+'">'+(a.check()?'✓ Freigeschaltet':'Gesperrt')+'</span></div>').join("")}
 function localDay(){let d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return y+"-"+m+"-"+day}
 function dailyReward(){let d=localDay();if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
-function updateBuildingButtons(){document.querySelectorAll("#buildings [data-i]").forEach(b=>{const i=Number(b.dataset.i),ok=unlocked(i),p=price(i);b.disabled=!ok||s.money<p;if(ok)b.textContent=fmt(p)+" kaufen"})}\nfunction tick(){let g=income()/10;s.money+=g;s.quests.earn+=g;gainXP(g/10);updateStats();updateBuildingButtons()}
+function updateBuildingButtons(){document.querySelectorAll("#buildings [data-i]").forEach(b=>{const i=Number(b.dataset.i),ok=unlocked(i),p=price(i);b.disabled=!ok||s.money<p;if(ok)b.textContent=fmt(p)+" kaufen"})}
+function tick(){let g=income()/10;s.money+=g;s.quests.earn+=g;gainXP(g/10);updateStats();updateBuildingButtons()}
 document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}});
 document.getElementById("click").onclick=()=>{s.money+=1;gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=1;save();updateStats();renderQuests();renderAchievements();};
 document.getElementById("save").onclick=save;
