@@ -158,8 +158,8 @@ function spawnBuyFX(btn){
  const r=btn.getBoundingClientRect(),f=document.createElement("div");f.className="buy-flash";f.style.setProperty("--x",(r.left+r.width/2)+"px");f.style.setProperty("--y",(r.top+r.height/2)+"px");document.body.appendChild(f);setTimeout(()=>f.remove(),380);buySound()
 }
 let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},claimedQuests:{},daily:0,day:"",gems:25,boostUntil:0,theme:"default",xp:0,level:1,researchPoints:0,research:{},event:null,eventEnds:0,eventReward:0,contracts:{},lastEventDay:""};
-const quests=[{id:"click",name:"Klick-Marathon",goal:100, reward:500, text:"Klicke 100-mal."},{id:"buy",name:"Investieren",goal:10,reward:2500,text:"Kaufe 10 Gebäude."},{id:"earn",name:"Erster Erfolg",goal:10000,reward:10000,text:"Verdiene insgesamt 10.000 Geld."}];
-const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon",check:()=>s.money>=100000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=25},{name:"Imperator",check:()=>s.prestige>=3},{name:"Milliardär",check:()=>s.money>=1e9}];
+const quests=[{id:"click",name:"Klick-Marathon",goal:1000, reward:5000, text:"Klicke 1.000-mal."},{id:"buy",name:"Großinvestor",goal:50,reward:25000,text:"Kaufe 50 Gebäude."},{id:"earn",name:"Wirtschaftsmacht",goal:1000000,reward:100000,text:"Verdiene insgesamt 1.000.000 Geld."}];
+const achievements=[{name:"Erster Schritt",check:()=>s.money>=1000},{name:"Tycoon",check:()=>s.money>=1000000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=100},{name:"Imperator",check:()=>s.prestige>=10},{name:"Milliardär",check:()=>s.money>=1e12}];
 try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.clickPower=s.clickPower??1;s.clickUpgrades=s.clickUpgrades??0;s.clickCritLevel=s.clickCritLevel??0;s.clickComboLevel=s.clickComboLevel??0;s.quests=s.quests||{click:0,buy:0,earn:0};s.claimedQuests=s.claimedQuests||{};s.levels=[...(s.levels||[])];while(s.levels.length<defs.length)s.levels.push(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default";s.xp=s.xp??0;s.level=s.level??1;s.researchPoints=s.researchPoints??0;s.research=s.research||{};s.contracts=s.contracts||{};s.lastEventDay=s.lastEventDay||"";s.claimedQuests=s.claimedQuests||{};
 if(s.buildingOrderVersion!==2){
  const oldLevels=[...(s.levels||[])];
@@ -254,14 +254,14 @@ function renderEvents(){
  const ep=document.getElementById("eventPanel"),cl=document.getElementById("contractsList");if(!ep)return;
  if(s.event&&Date.now()<s.eventEnds){const left=Math.max(0,Math.ceil((s.eventEnds-Date.now())/1000));ep.innerHTML='<div class="row"><div><b>'+s.event+'</b><div class="small">Aktiv • noch '+Math.floor(left/60)+'m '+left%60+'s</div></div><span class="gold">+'+fmt(s.eventReward)+' Geld</span></div>'}
  else {ep.innerHTML='<div class="row"><div><b>Kein Event aktiv</b><div class="small">Das nächste Event startet automatisch.</div></div><span class="pill">Warten</span></div>'}
- const cs=[{id:"trade",name:"Handelsauftrag",text:"Verdiene 50.000 Geld",goal:50000,reward:25000},{id:"industry",name:"Industrieauftrag",text:"Kaufe 5 Gebäude",goal:5,reward:40000},{id:"click",name:"Werbekampagne",text:"Klicke 50-mal",goal:50,reward:15000}];
+ const cs=[{id:"trade",name:"Großhandelsauftrag",text:"Verdiene 500.000 Geld",goal:500000,reward:150000},{id:"industry",name:"Industrieoffensive",text:"Kaufe 25 Gebäude",goal:25,reward:200000},{id:"click",name:"Massenkampagne",text:"Klicke 500-mal",goal:500,reward:75000}];
  cl.innerHTML=cs.map(x=>{let v=s.contracts[x.id]||0,done=v>=x.goal,claimed=s.contracts[x.id+"_claimed"];return '<div class="row"><div><b>'+x.name+'</b><div class="small">'+x.text+' • '+v+'/'+x.goal+'</div></div><button class="quest-claim" '+(!done||claimed?'disabled':'')+' data-contract="'+x.id+'">'+(claimed?'✓ Erledigt':done?'Abholen':'In Arbeit')+'</button></div>'}).join("");
  cl.querySelectorAll("[data-contract]").forEach(b=>b.onclick=()=>{const x=cs.find(q=>q.id===b.dataset.contract);if(x&&!s.contracts[x.id+"_claimed"]&&(s.contracts[x.id]||0)>=x.goal){s.money+=x.reward;s.contracts[x.id+"_claimed"]=true;save();render()}});
 }
 function maybeEvent(){
  const d=localDay();if(s.lastEventDay===d)return;
  s.lastEventDay=d;
- const events=[["Goldrausch",2,600],["Industrieboom",1.5,900],["Galaktischer Handel",3,1200]];
+ const events=[["Goldrausch",10,5000],["Industrieboom",15,10000],["Galaktischer Handel",20,20000]];
  const e=events[Math.floor(Math.random()*events.length)];s.event=e[0];s.eventEnds=Date.now()+e[1]*60*1000;s.eventReward=e[2]*mult();save();
 }
 function renderShop(){document.getElementById("shopList").innerHTML=shopItems.map((x,i)=>'<div class="row"><div><b>'+x.name+'</b><div class="small">'+x.desc+'</div></div><button class="buy" '+(s.gems<x.cost?'disabled':'')+' data-shop="'+i+'">'+x.cost+' 💎</button></div>').join("");document.querySelectorAll("[data-shop]").forEach(b=>b.onclick=()=>shopItems[+b.dataset.shop].action())}
