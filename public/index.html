@@ -37,7 +37,7 @@ h1{font-size:42px;margin:0;background:linear-gradient(90deg,#fff,#9c8cff);-webki
 </section>
 <div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button><button class="tab" data-tab="shop">Shop</button></div>
 <div id="game" class="tabpage"><div class="panel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><div class="label">Aktive Region</div><b id="regionName">Kernland</b><div class="small" id="regionInfo"></div></div><span class="pill" id="regionMult">×1</span></div></div><section class="grid">
-<div class="card big"><button class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
+<div class="card big"><button type="button" class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
 <div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="margin:7px 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
 </section></div>
 <div id="quests" class="tabpage" style="display:none"><div class="panel"><div class="label">Tagesquests</div><div id="questsList"></div></div></div>
@@ -93,7 +93,7 @@ document.getElementById("prestigeBtn").disabled=s.money<1000000;
 document.getElementById("gems").textContent=s.gems+" 💎";
 }
 function renderBuildings(){
-document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock;return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult())+'/s':'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
+document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock;return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult())+'/s':'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button type="button" class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
 }
 function render(){
 updateStats();
