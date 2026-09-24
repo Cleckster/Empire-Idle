@@ -56,7 +56,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .coin:hover{transform:none;border-color:#7166d9;box-shadow:0 22px 55px #000b,0 0 30px #7065ff25,inset 0 1px #ffffff18}
 .coin:active{transform:scale(.985);box-shadow:0 10px 25px #0009,inset 0 5px 18px #0008}
 .coin:focus-visible{outline:2px solid #9d94ff;outline-offset:4px}
-.income{position:relative;z-index:1;margin-top:12px;font-size:14px;font-weight:700;color:#c9d0df}.click-upgrade{position:relative;z-index:1;width:min(360px,90%);margin-top:12px;padding:10px 12px;border:1px solid #2a354c;border-radius:12px;background:#0e1422dd;display:flex;align-items:center;justify-content:space-between;gap:10px}.click-upgrade .buy{padding:8px 11px;font-size:12px}
+.income{position:relative;z-index:1;margin-top:12px;font-size:14px;font-weight:700;color:#c9d0df}.click-upgrade{position:relative;z-index:1;width:min(360px,90%);margin-top:12px;padding:10px 12px;border:1px solid #2a354c;border-radius:12px;background:#0e1422dd;display:flex;align-items:center;justify-content:space-between;gap:10px}.click-upgrade .buy{padding:8px 11px;font-size:11px}.click-upgrade .buy:disabled{opacity:.3}
 .actions{position:relative;z-index:1;margin-top:auto;padding-top:14px}
 .secondary{background:#161d2c;border:1px solid #2a354c;color:#cfd6e5;transition:.2s}
 .secondary:hover{background:#202a3d;border-color:#3b4964}
@@ -109,7 +109,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 </section>
 <div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button><button class="tab" data-tab="shop">Shop</button></div>
 <div id="game" class="tabpage"><div class="panel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><div class="label">Aktive Region</div><b id="regionName">Kernland</b><div class="small" id="regionInfo"></div></div><span class="pill" id="regionMult">×1</span></div></div><section class="grid">
-<div class="card big"><div style="position:relative;z-index:1;text-align:center;margin-bottom:8px"><div class="label">Deine Wirtschaft</div><div class="small">Klicke, um dein Imperium zu beschleunigen</div></div><button type="button" class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="click-upgrade"><div><div class="label">Klick-Upgrades</div><div class="small" id="clickUpgradeInfo">Aktuell: +1</div></div><button class="buy" id="clickUpgradeBtn">100 kaufen</button></div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
+<div class="card big"><div style="position:relative;z-index:1;text-align:center;margin-bottom:8px"><div class="label">Deine Wirtschaft</div><div class="small">Klicke, um dein Imperium zu beschleunigen</div></div><button type="button" class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="click-upgrade"><div><div class="label">Klick-Upgrades</div><div class="small" id="clickUpgradeInfo">Kraft Lv.0</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="buy" id="clickUpgradeBtn">100 • Kraft</button><button class="buy" id="clickCritBtn">500 • Krit</button><button class="buy" id="clickComboBtn">1.500 • Combo</button></div></div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
 <div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="margin:7px 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
 </section></div>
 <div id="quests" class="tabpage" style="display:none"><div class="panel"><div class="label">Tagesquests</div><div id="questsList"></div></div></div>
@@ -154,12 +154,17 @@ function spawnBuyFX(btn){
 let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},claimedQuests:{},daily:0,day:"",gems:25,boostUntil:0,theme:"default",xp:0,level:1};
 const quests=[{id:"click",name:"Klick-Marathon",goal:100, reward:500, text:"Klicke 100-mal."},{id:"buy",name:"Investieren",goal:10,reward:2500,text:"Kaufe 10 Gebäude."},{id:"earn",name:"Erster Erfolg",goal:10000,reward:10000,text:"Verdiene insgesamt 10.000 Geld."}];
 const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon",check:()=>s.money>=100000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=25},{name:"Imperator",check:()=>s.prestige>=3},{name:"Milliardär",check:()=>s.money>=1e9}];
-try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.clickPower=s.clickPower??1;s.clickUpgrades=s.clickUpgrades??0;s.quests=s.quests||{click:0,buy:0,earn:0};s.claimedQuests=s.claimedQuests||{};s.levels=[...(s.levels||[])];while(s.levels.length<defs.length)s.levels.push(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default";s.xp=s.xp??0;s.level=s.level??1;s.claimedQuests=s.claimedQuests||{}}catch{}
+try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.clickPower=s.clickPower??1;s.clickUpgrades=s.clickUpgrades??0;s.clickCritLevel=s.clickCritLevel??0;s.clickComboLevel=s.clickComboLevel??0;s.quests=s.quests||{click:0,buy:0,earn:0};s.claimedQuests=s.claimedQuests||{};s.levels=[...(s.levels||[])];while(s.levels.length<defs.length)s.levels.push(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default";s.xp=s.xp??0;s.level=s.level??1;s.claimedQuests=s.claimedQuests||{}}catch{}
 const fmt=n=>n>=1e12?(n/1e12).toFixed(2)+"T":n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(2)+"K":Math.floor(n).toLocaleString("de-DE");
 const mult=()=>1+s.prestige*.15;
 const clickValue=()=>s.clickPower*mult();
-const clickUpgradeCost=()=>Math.floor(100*Math.pow(8,s.clickUpgrades));
-const clickCriticalChance=()=>Math.min(.15,.02+s.clickUpgrades*.01);
+const clickUpgradeCost=()=>Math.floor(100*Math.pow(3.2,s.clickUpgrades));
+const clickCritCost=()=>Math.floor(500*Math.pow(3.8,s.clickCritLevel));
+const clickComboCost=()=>Math.floor(1500*Math.pow(4,s.clickComboLevel));
+const clickCriticalChance=()=>Math.min(.25,.02+s.clickCritLevel*.025);
+const clickComboBonus=()=>1+s.clickComboLevel*.15;
+const clickBaseValue=()=>s.clickPower*mult();
+const clickValue=()=>clickBaseValue()*clickComboBonus();
 const boost=()=>Date.now()<s.boostUntil?2:1;
 const regions=[{name:"Kernland",unlock:0,mult:1},{name:"Handelsbund",unlock:20,mult:1.5},{name:"Weltmetropole",unlock:50,mult:2.5},{name:"Orbitalzone",unlock:100,mult:5}];
 const totalLevels=()=>s.levels.reduce((a,b)=>a+b,0);
@@ -182,10 +187,14 @@ document.getElementById("xpInfo").textContent=fmt(s.xp)+" / "+fmt(xpNeeded())+" 
 document.getElementById("regionName").textContent=rr.name;
 document.getElementById("regionMult").textContent="×"+rr.mult;
 document.getElementById("regionInfo").textContent=ri===regions.length-1?"Maximale Region erreicht.":(regions[ri+1].unlock-totalLevels())+" Gebäude-Level bis "+regions[ri+1].name;
-document.getElementById("clickInfo").textContent="+"+fmt(clickValue())+" pro Klick • "+s.clickUpgrades+" Upgrades";
-document.getElementById("clickUpgradeInfo").textContent="Aktuell: +"+fmt(clickValue())+" • Kritisch: "+Math.round(clickCriticalChance()*100)+"%";
+document.getElementById("clickInfo").textContent="+"+fmt(clickValue())+" pro Klick";
+document.getElementById("clickUpgradeInfo").textContent="Kraft Lv."+s.clickUpgrades+" • Kritisch "+Math.round(clickCriticalChance()*100)+"% • Combo +"+Math.round((clickComboBonus()-1)*100)+"%";
 document.getElementById("clickUpgradeBtn").disabled=s.money<clickUpgradeCost();
-document.getElementById("clickUpgradeBtn").textContent=fmt(clickUpgradeCost())+" kaufen";
+document.getElementById("clickUpgradeBtn").textContent=fmt(clickUpgradeCost())+" • Kraft";
+document.getElementById("clickCritBtn").disabled=s.money<clickCritCost();
+document.getElementById("clickCritBtn").textContent=fmt(clickCritCost())+" • Krit";
+document.getElementById("clickComboBtn").disabled=s.money<clickComboCost();
+document.getElementById("clickComboBtn").textContent=fmt(clickComboCost())+" • Combo";
 document.getElementById("prestigeBtn").disabled=s.money<1000000;
 document.getElementById("gems").textContent=s.gems+" 💎";
 }
@@ -207,7 +216,9 @@ function dailyReward(){let d=localDay();if(s.day!==d){s.day=d;s.daily=1;s.money+
 function updateBuildingButtons(){document.querySelectorAll("#buildings [data-i]").forEach(b=>{const i=Number(b.dataset.i),ok=unlocked(i),p=price(i);b.disabled=!ok||s.money<p;if(ok)b.textContent=fmt(p)+" kaufen"})}
 function tick(){let g=income()/10;s.money+=g;s.quests.earn+=g;gainXP(g/10);updateStats();updateBuildingButtons()}
 document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render();setTimeout(()=>{const nb=document.querySelector('[data-i="'+i+'"]');if(nb)spawnBuyFX(nb)},0)}});
-document.getElementById("clickUpgradeBtn").onclick=()=>{const cost=clickUpgradeCost();if(s.money>=cost){s.money-=cost;s.clickPower*=2;s.clickUpgrades++;save();render()}};
+document.getElementById("clickUpgradeBtn").onclick=()=>{const cost=clickUpgradeCost();if(s.money>=cost){s.money-=cost;s.clickPower*=1.65;s.clickUpgrades++;save();render()}};
+document.getElementById("clickCritBtn").onclick=()=>{const cost=clickCritCost();if(s.money>=cost&&s.clickCritLevel<10){s.money-=cost;s.clickCritLevel++;save();render()}};
+document.getElementById("clickComboBtn").onclick=()=>{const cost=clickComboCost();if(s.money>=cost&&s.clickComboLevel<10){s.money-=cost;s.clickComboLevel++;save();render()}};
 document.getElementById("click").onclick=(e)=>{const critical=Math.random()<clickCriticalChance();const value=clickValue()*(critical?5:1);s.money+=value;gainXP(value);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=1;save();updateStats();renderQuests();renderAchievements();clickSound();spawnClickFX(e.clientX,e.clientY,value,critical)};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
