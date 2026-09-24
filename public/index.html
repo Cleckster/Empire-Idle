@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="empire-version" content="2.1-repair"><title>Empire Idle • Repair 2.1</title>
+<meta name="empire-version" content="4.0"><title>Empire Idle • Expansion 4.0</title>
 <style>
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#080b12;color:#f5f7ff}button{cursor:pointer;border:0}
 .wrap{max-width:1100px;margin:auto;padding:28px 18px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}
@@ -98,16 +98,16 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 @keyframes buyPulse{0%{box-shadow:0 0 0 0 #8b7dff88}45%{box-shadow:0 0 0 12px #8b7dff22,0 0 30px #8b7dff88}100%{box-shadow:0 0 0 25px #8b7dff00}}
 .buy-flash{position:fixed;inset:0;background:radial-gradient(circle at var(--x) var(--y),#8b7dff2b,transparent 28%);pointer-events:none;z-index:9998;animation:flash .35s ease-out forwards}
 @keyframes flash{to{opacity:0}}
-</style>
+ .row button{min-width:90px}.gold{font-weight:800}.tabpage .panel{min-height:180px}@media(max-width:760px){.row{align-items:flex-start}.row button{min-width:80px}}\n</style>
 </head>
 <body><div class="fx-layer" id="fxLayer"></div><main class="wrap">
-<section class="hero"><div><h1>Empire Idle</h1><div class="sub">Baue dein Imperium. Verdiene auch offline.</div></div><div class="label">TYCOON • v3.0</div></section>
+<section class="hero"><div><h1>Empire Idle</h1><div class="sub">Baue dein Imperium. Verdiene auch offline.</div></div><div class="label">TYCOON • v4.0</div></section>
 <section class="stats">
 <div class="card"><div class="label">Geld</div><div class="value" id="money">0</div></div>
 <div class="card"><div class="label">Pro Sekunde</div><div class="value" id="income">0</div></div>
 <div class="card"><div class="label">Prestige</div><div class="value" id="prestige">0</div></div><div class="card"><div class="label">Imperiums-Level</div><div class="value" id="level">1</div><div class="small" id="xpInfo">0 / 100 XP</div></div>
 </section>
-<div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button><button class="tab" data-tab="shop">Shop</button></div>
+<div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button><button class="tab" data-tab="shop">Shop</button><button class="tab" data-tab="research">Forschung</button><button class="tab" data-tab="events">Events</button></div>
 <div id="game" class="tabpage"><div class="panel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><div class="label">Aktive Region</div><b id="regionName">Kernland</b><div class="small" id="regionInfo"></div></div><span class="pill" id="regionMult">×1</span></div></div><section class="grid">
 <div class="card big"><div style="position:relative;z-index:1;text-align:center;margin-bottom:8px"><div class="label">Deine Wirtschaft</div><div class="small">Klicke, um dein Imperium zu beschleunigen</div></div><button type="button" class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="click-upgrade"><div><div class="label">Klick-Upgrades</div><div class="small" id="clickUpgradeInfo">Kraft Lv.0</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="buy" id="clickUpgradeBtn">100 • Kraft</button><button class="buy" id="clickCritBtn">500 • Krit</button><button class="buy" id="clickComboBtn">1.500 • Combo</button></div></div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
 <div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="margin:7px 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
@@ -115,9 +115,15 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 <div id="quests" class="tabpage" style="display:none"><div class="panel"><div class="label">Tagesquests</div><div id="questsList"></div></div></div>
 <div id="achievements" class="tabpage" style="display:none"><div class="panel"><div class="label">Meilensteine</div><div id="achievementsList"></div></div></div>
 <div id="shop" class="tabpage" style="display:none"><div class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="label">Empire Shop</div><div class="small">Premium-Währung: <span class="gold" id="gems">0 💎</span></div></div></div><div id="shopList"></div></div></div>
+<div id="research" class="tabpage" style="display:none"><div class="panel"><div class="label">Forschungszentrum</div><div class="small">Forschungspunkte: <span class="gold" id="researchPoints">0</span> • Permanente Verbesserungen</div><div id="researchList"></div></div></div>
+<div id="events" class="tabpage" style="display:none"><div class="panel"><div class="label">Imperiums-Events</div><div id="eventPanel"></div><div class="label" style="margin-top:18px">Aufträge</div><div id="contractsList"></div></div></div>
 </main>
 <script>
 const defs=[
+{name:"Mondkolonie",desc:"Fördert seltene Mondressourcen.",base:5000000000000,prod:12000000000,region:4},
+{name:"Dyson-Sphäre",desc:"Nutzt die Energie eines Sterns.",base:100000000000000,prod:300000000000,region:5},
+{name:"Dimensionsportal",desc:"Handelt über Raum und Zeit.",base:5000000000000000,prod:8000000000000,region:6},
+{name:"Multiversum-Konzern",desc:"Dein Imperium erreicht andere Realitäten.",base:100000000000000000,prod:250000000000000,region:6},
 {name:"Bergwerk",desc:"Fördert Rohstoffe.",base:25,prod:1,region:0},
 {name:"Farm",desc:"Versorgt deine Wirtschaft.",base:150,prod:7,region:0},
 {name:"Werkstatt",desc:"Produziert Waren.",base:900,prod:45,region:0},
@@ -151,11 +157,12 @@ function spawnBuyFX(btn){
  btn.classList.remove("buy-pulse");void btn.offsetWidth;btn.classList.add("buy-pulse");
  const r=btn.getBoundingClientRect(),f=document.createElement("div");f.className="buy-flash";f.style.setProperty("--x",(r.left+r.width/2)+"px");f.style.setProperty("--y",(r.top+r.height/2)+"px");document.body.appendChild(f);setTimeout(()=>f.remove(),380);buySound()
 }
-let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},claimedQuests:{},daily:0,day:"",gems:25,boostUntil:0,theme:"default",xp:0,level:1};
+let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},claimedQuests:{},daily:0,day:"",gems:25,boostUntil:0,theme:"default",xp:0,level:1,researchPoints:0,research:{},event:null,eventEnds:0,eventReward:0,contracts:{},lastEventDay:""};
 const quests=[{id:"click",name:"Klick-Marathon",goal:100, reward:500, text:"Klicke 100-mal."},{id:"buy",name:"Investieren",goal:10,reward:2500,text:"Kaufe 10 Gebäude."},{id:"earn",name:"Erster Erfolg",goal:10000,reward:10000,text:"Verdiene insgesamt 10.000 Geld."}];
 const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon",check:()=>s.money>=100000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=25},{name:"Imperator",check:()=>s.prestige>=3},{name:"Milliardär",check:()=>s.money>=1e9}];
-try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.clickPower=s.clickPower??1;s.clickUpgrades=s.clickUpgrades??0;s.clickCritLevel=s.clickCritLevel??0;s.clickComboLevel=s.clickComboLevel??0;s.quests=s.quests||{click:0,buy:0,earn:0};s.claimedQuests=s.claimedQuests||{};s.levels=[...(s.levels||[])];while(s.levels.length<defs.length)s.levels.push(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default";s.xp=s.xp??0;s.level=s.level??1;s.claimedQuests=s.claimedQuests||{}}catch{}
+try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.clickPower=s.clickPower??1;s.clickUpgrades=s.clickUpgrades??0;s.clickCritLevel=s.clickCritLevel??0;s.clickComboLevel=s.clickComboLevel??0;s.quests=s.quests||{click:0,buy:0,earn:0};s.claimedQuests=s.claimedQuests||{};s.levels=[...(s.levels||[])];while(s.levels.length<defs.length)s.levels.push(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default";s.xp=s.xp??0;s.level=s.level??1;s.researchPoints=s.researchPoints??0;s.research=s.research||{};s.contracts=s.contracts||{};s.lastEventDay=s.lastEventDay||"";s.claimedQuests=s.claimedQuests||{}}catch{} 
 const fmt=n=>n>=1e12?(n/1e12).toFixed(2)+"T":n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(2)+"K":Math.floor(n).toLocaleString("de-DE");
+const researchMult=()=>1+(s.research.economy||0)*.10+(s.research.industry||0)*.15+(s.research.space||0)*.20+(s.research.energy||0)*.25;
 const mult=()=>1+s.prestige*.15;
 const clickUpgradeCost=()=>Math.floor(100*Math.pow(3.2,s.clickUpgrades));
 const clickCritCost=()=>Math.floor(500*Math.pow(3.8,s.clickCritLevel));
@@ -164,17 +171,36 @@ const clickCriticalChance=()=>Math.min(.25,.02+s.clickCritLevel*.025);
 const clickComboBonus=()=>1+s.clickComboLevel*.15;
 const clickValue=()=>s.clickPower*mult()*clickComboBonus();
 const boost=()=>Date.now()<s.boostUntil?2:1;
-const regions=[{name:"Kernland",unlock:0,mult:1},{name:"Handelsbund",unlock:20,mult:1.5},{name:"Weltmetropole",unlock:50,mult:2.5},{name:"Orbitalzone",unlock:100,mult:5}];
+const regions=[
+{name:"Kernland",unlock:0,mult:1},
+{name:"Handelsbund",unlock:20,mult:1.5},
+{name:"Weltmetropole",unlock:50,mult:2.5},
+{name:"Orbitalzone",unlock:100,mult:5},
+{name:"Galaktisches Reich",unlock:180,mult:8},
+{name:"Sternenbund",unlock:300,mult:13},
+{name:"Dimensionale Zone",unlock:500,mult:22}
+];
 const totalLevels=()=>s.levels.reduce((a,b)=>a+b,0);
 const regionForLevels=()=>Math.min(regions.length-1,regions.reduce((best,r,i)=>totalLevels()>=r.unlock?i:best,0));
 const regionMult=()=>regions[regionForLevels()].mult;
-const totalMult=()=>mult()*boost()*regionMult();
+const totalMult=()=>mult()*boost()*regionMult()*researchMult();
 const xpNeeded=()=>Math.floor(100*Math.pow(1.22,s.level-1));
 function gainXP(n){s.xp+=Math.max(0,n);while(s.xp>=xpNeeded()){s.xp-=xpNeeded();s.level++;if(s.level%5===0)s.gems+=2}}
 const shopItems=[{name:"2× Produktion",desc:"Verdoppelt Einkommen für 5 Minuten.",cost:10,action:()=>{if(s.gems>=10){s.gems-=10;s.boostUntil=Math.max(Date.now(),s.boostUntil)+300000;save();render()}}},{name:"Kapital-Spritze",desc:"Sofort 60 Sekunden deines aktuellen Einkommens.",cost:8,action:()=>{if(s.gems>=8){s.gems-=8;s.money+=income()*60;save();render()}}},{name:"VIP-Farbe",desc:"Schaltet einen goldenen VIP-Look frei.",cost:30,action:()=>{if(s.gems>=30){s.gems-=30;s.theme="vip";document.body.classList.add("vip");save();render()}}}];
 const price=(i)=>Math.floor(defs[i].base*Math.pow(1.16,s.levels[i]));
 const unlocked=(i)=>defs[i].region<=regionForLevels();
 const income=()=>defs.reduce((a,d,i)=>a+(unlocked(i)?d.prod*s.levels[i]:0),0)*totalMult();
+const researchDefs=[
+{id:"economy",name:"Makroökonomie",desc:"+10% Gesamteinkommen pro Stufe.",max:5,cost:i=>5+i*7},
+{id:"industry",name:"Industrieautomatisierung",desc:"+15% Gesamteinkommen pro Stufe.",max:5,cost:i=>8+i*10},
+{id:"space",name:"Raumfahrttechnik",desc:"+20% Gesamteinkommen pro Stufe.",max:5,cost:i=>12+i*15},
+{id:"energy",name:"Nullpunkt-Energie",desc:"+25% Gesamteinkommen pro Stufe.",max:5,cost:i=>18+i*20}
+];
+function renderResearch(){
+ const el=document.getElementById("researchList"); if(!el)return;
+ el.innerHTML=researchDefs.map(r=>{const lv=s.research[r.id]||0,done=lv>=r.max,cost=r.cost(lv);return '<div class="row"><div><b>'+r.name+' <span class="small">Lv.'+lv+'/'+r.max+'</span></b><div class="small">'+r.desc+'</div></div><button class="buy" data-research="'+r.id+'" '+(done||s.researchPoints<cost?'disabled':'')+'>'+ (done?'MAX':cost+' FP')+'</button></div>'}).join("");
+ el.querySelectorAll("[data-research]").forEach(b=>b.onclick=()=>{const id=b.dataset.research,r=researchDefs.find(x=>x.id===id),lv=s.research[id]||0,cost=r.cost(lv);if(lv<r.max&&s.researchPoints>=cost){s.researchPoints-=cost;s.research[id]=lv+1;save();render()}});
+}
 function updateStats(){
 document.getElementById("money").textContent=fmt(s.money);
 document.getElementById("income").textContent=fmt(income());
@@ -194,7 +220,7 @@ document.getElementById("clickCritBtn").textContent=fmt(clickCritCost())+" • K
 document.getElementById("clickComboBtn").disabled=s.money<clickComboCost();
 document.getElementById("clickComboBtn").textContent=fmt(clickComboCost())+" • Combo";
 document.getElementById("prestigeBtn").disabled=s.money<1000000;
-document.getElementById("gems").textContent=s.gems+" 💎";
+document.getElementById("gems").textContent=s.gems+" 💎";document.getElementById("researchPoints").textContent=fmt(s.researchPoints);
 }
 function renderBuildings(){
 document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock;return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult())+'/s':'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button type="button" class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
@@ -203,26 +229,42 @@ function render(){
 updateStats();
 renderBuildings();
 renderShop();
+renderResearch();
+renderEvents();
 renderQuests();renderAchievements();
 }
 function save(){s.last=Date.now();localStorage.setItem(key,JSON.stringify(s))}
 function renderQuests(){document.getElementById("questsList").innerHTML=quests.map(q=>{let v=s.quests[q.id]||0,done=v>=q.goal,claimed=!!s.claimedQuests[q.id];return '<div class="row"><div><b>'+q.name+'</b><div class="small">'+q.text+' Belohnung: <span class="gold">'+fmt(q.reward)+'</span></div><div class="progress"><div class="bar" style="width:'+Math.min(100,v/q.goal*100)+'%"></div></div></div><div>'+(!done?v+'/'+q.goal:(claimed?'<span class="done">✓ Abgeholt</span>':'<button class="quest-claim" data-claim="'+q.id+'">Belohnung abholen</button>'))+'</div></div>'}).join("");document.querySelectorAll("[data-claim]").forEach(b=>b.onclick=()=>{let q=quests.find(x=>x.id===b.dataset.claim);if(q&&(s.quests[q.id]||0)>=q.goal&&!s.claimedQuests[q.id]){s.money+=q.reward;s.claimedQuests[q.id]=true;save();render()}})}
+function renderEvents(){
+ const ep=document.getElementById("eventPanel"),cl=document.getElementById("contractsList");if(!ep)return;
+ if(s.event&&Date.now()<s.eventEnds){const left=Math.max(0,Math.ceil((s.eventEnds-Date.now())/1000));ep.innerHTML='<div class="row"><div><b>'+s.event+'</b><div class="small">Aktiv • noch '+Math.floor(left/60)+'m '+left%60+'s</div></div><span class="gold">+'+fmt(s.eventReward)+' Geld</span></div>'}
+ else {ep.innerHTML='<div class="row"><div><b>Kein Event aktiv</b><div class="small">Das nächste Event startet automatisch.</div></div><span class="pill">Warten</span></div>'}
+ const cs=[{id:"trade",name:"Handelsauftrag",text:"Verdiene 50.000 Geld",goal:50000,reward:25000},{id:"industry",name:"Industrieauftrag",text:"Kaufe 5 Gebäude",goal:5,reward:40000},{id:"click",name:"Werbekampagne",text:"Klicke 50-mal",goal:50,reward:15000}];
+ cl.innerHTML=cs.map(x=>{let v=s.contracts[x.id]||0,done=v>=x.goal,claimed=s.contracts[x.id+"_claimed"];return '<div class="row"><div><b>'+x.name+'</b><div class="small">'+x.text+' • '+v+'/'+x.goal+'</div></div><button class="quest-claim" '+(!done||claimed?'disabled':'')+' data-contract="'+x.id+'">'+(claimed?'✓ Erledigt':done?'Abholen':'In Arbeit')+'</button></div>'}).join("");
+ cl.querySelectorAll("[data-contract]").forEach(b=>b.onclick=()=>{const x=cs.find(q=>q.id===b.dataset.contract);if(x&&!s.contracts[x.id+"_claimed"]&&(s.contracts[x.id]||0)>=x.goal){s.money+=x.reward;s.contracts[x.id+"_claimed"]=true;save();render()}});
+}
+function maybeEvent(){
+ const d=localDay();if(s.lastEventDay===d)return;
+ s.lastEventDay=d;
+ const events=[["Goldrausch",2,600],["Industrieboom",1.5,900],["Galaktischer Handel",3,1200]];
+ const e=events[Math.floor(Math.random()*events.length)];s.event=e[0];s.eventEnds=Date.now()+e[1]*60*1000;s.eventReward=e[2]*mult();save();
+}
 function renderShop(){document.getElementById("shopList").innerHTML=shopItems.map((x,i)=>'<div class="row"><div><b>'+x.name+'</b><div class="small">'+x.desc+'</div></div><button class="buy" '+(s.gems<x.cost?'disabled':'')+' data-shop="'+i+'">'+x.cost+' 💎</button></div>').join("");document.querySelectorAll("[data-shop]").forEach(b=>b.onclick=()=>shopItems[+b.dataset.shop].action())}
 function renderAchievements(){document.getElementById("achievementsList").innerHTML=achievements.map(a=>'<div class="row"><b>'+a.name+'</b><span class="'+(a.check()?'done':'pill')+'">'+(a.check()?'✓ Freigeschaltet':'Gesperrt')+'</span></div>').join("")}
 function localDay(){let d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return y+"-"+m+"-"+day}
 function dailyReward(){let d=localDay();if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
 function updateBuildingButtons(){document.querySelectorAll("#buildings [data-i]").forEach(b=>{const i=Number(b.dataset.i),ok=unlocked(i),p=price(i);b.disabled=!ok||s.money<p;if(ok)b.textContent=fmt(p)+" kaufen"})}
-function tick(){let g=income()/2;s.money+=g;s.quests.earn+=g;gainXP(g/10);updateStats();updateBuildingButtons()}
-document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render();setTimeout(()=>{const nb=document.querySelector('[data-i="'+i+'"]');if(nb)spawnBuyFX(nb)},0)}});
+function tick(){let g=income()/2;s.money+=g;s.quests.earn+=g;s.contracts.trade=(s.contracts.trade||0)+g;gainXP(g/10);updateStats();updateBuildingButtons()}
+document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;s.contracts.industry=(s.contracts.industry||0)+1;gainXP(Math.max(5,Math.floor(p/100)));save();render();setTimeout(()=>{const nb=document.querySelector('[data-i="'+i+'"]');if(nb)spawnBuyFX(nb)},0)}});
 document.getElementById("clickUpgradeBtn").onclick=()=>{const cost=clickUpgradeCost();if(s.money>=cost){s.money-=cost;s.clickPower*=1.65;s.clickUpgrades++;save();render()}};
 document.getElementById("clickCritBtn").onclick=()=>{const cost=clickCritCost();if(s.money>=cost&&s.clickCritLevel<10){s.money-=cost;s.clickCritLevel++;save();render()}};
 document.getElementById("clickComboBtn").onclick=()=>{const cost=clickComboCost();if(s.money>=cost&&s.clickComboLevel<10){s.money-=cost;s.clickComboLevel++;save();render()}};
-document.getElementById("click").onclick=(e)=>{const critical=Math.random()<clickCriticalChance();const value=clickValue()*(critical?5:1);s.money+=value;gainXP(value);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=value;save();updateStats();renderQuests();renderAchievements();clickSound();spawnClickFX(e.clientX,e.clientY,value,critical)};
+document.getElementById("click").onclick=(e)=>{const critical=Math.random()<clickCriticalChance();const value=clickValue()*(critical?5:1);s.money+=value;gainXP(value);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=value;s.contracts.click=(s.contracts.click||0)+1;save();updateStats();renderQuests();renderAchievements();clickSound();spawnClickFX(e.clientX,e.clientY,value,critical)};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
-document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.gems+=5;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);s.clickPower=1;s.clickUpgrades=0;s.clickCritLevel=0;s.clickComboLevel=0;save();render()}};
+document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.gems+=5;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);s.clickPower=1;s.clickUpgrades=0;s.clickCritLevel=0;s.clickComboLevel=0;s.researchPoints+=Math.floor(5+s.prestige*2);s.research={};save();render()}};
 const away=Math.max(0,Math.min((Date.now()-(s.last||Date.now()))/1000,8*3600));if(away>10){s.money+=income()*away;document.getElementById("offline").textContent="Offline verdient: +"+fmt(income()*away)}
-dailyReward();if(s.theme==="vip")document.body.classList.add("vip");
+dailyReward();maybeEvent();if(s.theme==="vip")document.body.classList.add("vip");
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tabpage").forEach(x=>x.style.display="none");b.classList.add("active");document.getElementById(b.dataset.tab).style.display="block"});
-render();setInterval(tick,500);
+render();setInterval(()=>{tick();renderEvents()},500);
 </script></body></html>
