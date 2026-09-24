@@ -50,10 +50,12 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .grid{min-height:0;flex:1;grid-template-columns:minmax(390px,.82fr) minmax(500px,1.18fr);gap:12px}
 .big{height:100%;min-height:0;padding:20px;position:relative;overflow:hidden}
 .big:before{content:"";position:absolute;width:300px;height:300px;top:35%;left:50%;transform:translate(-50%,-50%);background:#7667ff18;border-radius:50%;filter:blur(35px);pointer-events:none}
-.coin{position:relative;z-index:1;width:184px;height:184px;border-radius:50%;font-size:24px;letter-spacing:.08em;color:#fffdf0;background:radial-gradient(circle at 32% 24%,#fffbe0 0,#ffe878 20%,#ffc72e 48%,#9a6500 100%);border:7px solid #fff4;box-shadow:0 0 0 2px #9f761b,0 0 45px #ffd43b55,0 18px 35px #0008,inset 0 0 25px #fff8;transition:transform .12s,box-shadow .2s}
-.coin:before{content:"";position:absolute;inset:10px;border-radius:50%;border:1px solid #fff7;box-shadow:inset 0 0 20px #fff3}
-.coin:hover{transform:translateY(-3px) scale(1.015);box-shadow:0 0 0 2px #c79622,0 0 65px #ffd43b77,0 22px 40px #0009,inset 0 0 28px #fff9}
-.coin:active{transform:scale(.965);box-shadow:0 0 35px #ffd43b66,inset 0 0 35px #fff9}
+.coin{position:relative;z-index:1;width:min(360px,78%);height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
+.coin:before{content:"EMPIRE";position:absolute;inset:0;display:grid;place-items:center;font-size:28px;letter-spacing:.28em;font-weight:900;color:#f2f4ff;text-shadow:0 0 18px #8d80ff88;pointer-events:none}
+.coin:after{content:"CLICK TO EARN";position:absolute;left:0;right:0;bottom:17px;text-align:center;font-size:9px;letter-spacing:.28em;font-weight:800;color:#8995ad;pointer-events:none}
+.coin:hover{transform:translateY(-3px);border-color:#7166d9;box-shadow:0 22px 55px #000b,0 0 30px #7065ff25,inset 0 1px #ffffff18}
+.coin:active{transform:translateY(2px) scale(.985);box-shadow:0 10px 25px #0009,inset 0 5px 18px #0008}
+.coin:focus-visible{outline:2px solid #9d94ff;outline-offset:4px}
 .income{position:relative;z-index:1;margin-top:15px;font-size:14px;font-weight:700;color:#c9d0df}
 .actions{position:relative;z-index:1;margin-top:auto;padding-top:14px}
 .secondary{background:#161d2c;border:1px solid #2a354c;color:#cfd6e5;transition:.2s}
@@ -146,7 +148,7 @@ document.getElementById("xpInfo").textContent=fmt(s.xp)+" / "+fmt(xpNeeded())+" 
 document.getElementById("regionName").textContent=rr.name;
 document.getElementById("regionMult").textContent="×"+rr.mult;
 document.getElementById("regionInfo").textContent=ri===regions.length-1?"Maximale Region erreicht.":(regions[ri+1].unlock-totalLevels())+" Gebäude-Level bis "+regions[ri+1].name;
-document.getElementById("clickInfo").textContent="+"+fmt(totalMult())+" pro Klick";
+document.getElementById("clickInfo").textContent="+1 pro Klick";
 document.getElementById("prestigeBtn").disabled=s.money<1000000;
 document.getElementById("gems").textContent=s.gems+" 💎";
 }
@@ -167,7 +169,7 @@ function localDay(){let d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).
 function dailyReward(){let d=localDay();if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
 function tick(){let g=income()/10;s.money+=g;s.quests.earn+=g;gainXP(g/10);updateStats()}
 document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}});
-document.getElementById("click").onclick=()=>{s.money+=totalMult();gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=totalMult();save();updateStats();renderQuests();renderAchievements();};
+document.getElementById("click").onclick=()=>{s.money+=1;gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=1;save();updateStats();renderQuests();renderAchievements();};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
 document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.gems+=5;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);save();render()}};
