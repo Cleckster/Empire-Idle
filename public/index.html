@@ -50,11 +50,11 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .grid{min-height:0;flex:1;grid-template-columns:minmax(390px,.82fr) minmax(500px,1.18fr);gap:12px}
 .big{height:100%;min-height:0;padding:20px;position:relative;overflow:hidden}
 .big:before{content:"";position:absolute;width:300px;height:300px;top:35%;left:50%;transform:translate(-50%,-50%);background:#7667ff18;border-radius:50%;filter:blur(35px);pointer-events:none}
-.coin{position:relative;z-index:1;transform:translateY(24px);width:min(360px,78%);height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
+.coin{position:relative;z-index:1;transform:translateY(46px);width:min(360px,78%);height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
 .coin:before{content:"EMPIRE";position:absolute;inset:0;display:grid;place-items:center;font-size:28px;letter-spacing:.28em;font-weight:900;color:#f2f4ff;text-shadow:0 0 18px #8d80ff88;pointer-events:none}
 .coin:after{content:"CLICK TO EARN";position:absolute;left:0;right:0;bottom:17px;text-align:center;font-size:9px;letter-spacing:.28em;font-weight:800;color:#8995ad;pointer-events:none}
-.coin:hover{transform:translateY(21px);border-color:#7166d9;box-shadow:0 22px 55px #000b,0 0 30px #7065ff25,inset 0 1px #ffffff18}
-.coin:active{transform:translateY(27px) scale(.985);box-shadow:0 10px 25px #0009,inset 0 5px 18px #0008}
+.coin:hover{transform:translateY(43px);border-color:#7166d9;box-shadow:0 22px 55px #000b,0 0 30px #7065ff25,inset 0 1px #ffffff18}
+.coin:active{transform:translateY(49px) scale(.985);box-shadow:0 10px 25px #0009,inset 0 5px 18px #0008}
 .coin:focus-visible{outline:2px solid #9d94ff;outline-offset:4px}
 .income{position:relative;z-index:1;margin-top:15px;font-size:14px;font-weight:700;color:#c9d0df}
 .actions{position:relative;z-index:1;margin-top:auto;padding-top:14px}
@@ -86,9 +86,22 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
  .tab{white-space:nowrap}
  .coin{width:170px;height:170px}
 }
-</style>
+<style>
+/* ===== Interaction FX ===== */
+.fx-layer{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
+.click-particle{position:absolute;width:7px;height:7px;border-radius:50%;background:#9d91ff;box-shadow:0 0 12px #8b7dff;animation:particleFly .65s ease-out forwards}
+@keyframes particleFly{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.15);opacity:0}}
+.click-float{position:absolute;color:#fff;font-weight:900;font-size:18px;text-shadow:0 0 14px #8c7fff;animation:floatUp .7s ease-out forwards}
+@keyframes floatUp{from{transform:translate(-50%,0) scale(.8);opacity:0}20%{opacity:1}to{transform:translate(-50%,-55px) scale(1.15);opacity:0}}
+.click-ring{position:absolute;width:30px;height:30px;border:2px solid #9d91ff;border-radius:50%;transform:translate(-50%,-50%);animation:ring .5s ease-out forwards}
+@keyframes ring{to{width:190px;height:190px;opacity:0;border-width:1px}}
+.buy-pulse{animation:buyPulse .42s ease-out}
+@keyframes buyPulse{0%{box-shadow:0 0 0 0 #8b7dff88}45%{box-shadow:0 0 0 12px #8b7dff22,0 0 30px #8b7dff88}100%{box-shadow:0 0 0 25px #8b7dff00}}
+.buy-flash{position:fixed;inset:0;background:radial-gradient(circle at var(--x) var(--y),#8b7dff2b,transparent 28%);pointer-events:none;z-index:9998;animation:flash .35s ease-out forwards}
+@keyframes flash{to{opacity:0}}
+</style></style>
 </head>
-<body><main class="wrap">
+<body><div class="fx-layer" id="fxLayer"></div><main class="wrap">
 <section class="hero"><div><h1>Empire Idle</h1><div class="sub">Baue dein Imperium. Verdiene auch offline.</div></div><div class="label">TYCOON • v3.0</div></section>
 <section class="stats">
 <div class="card"><div class="label">Geld</div><div class="value" id="money">0</div></div>
@@ -120,6 +133,25 @@ const defs=[
 {name:"Sternenkonzern",desc:"Dein Imperium wird interstellar.",base:500000000000,prod:1500000000,region:3}
 ];
 const key="empireIdleSave";
+let audioCtx=null;
+function getAudio(){if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==="suspended")audioCtx.resume();return audioCtx}
+function tone(freq,duration,type="sine",volume=.045,slide=0){
+ const ctx=getAudio(),o=ctx.createOscillator(),g=ctx.createGain(),now=ctx.currentTime;
+ o.type=type;o.frequency.setValueAtTime(freq,now);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(40,freq+slide),now+duration);
+ g.gain.setValueAtTime(.0001,now);g.gain.exponentialRampToValueAtTime(volume,now+.008);g.gain.exponentialRampToValueAtTime(.0001,now+duration);
+ o.connect(g);g.connect(ctx.destination);o.start(now);o.stop(now+duration+.02)
+}
+function clickSound(){tone(520,.09,"sine",.035,180);tone(780,.07,"triangle",.018,80)}
+function buySound(){tone(260,.12,"triangle",.045,180);setTimeout(()=>tone(520,.16,"sine",.035,260),55)}
+function spawnClickFX(x,y){
+ const layer=document.getElementById("fxLayer"),ring=document.createElement("div");ring.className="click-ring";ring.style.left=x+"px";ring.style.top=y+"px";layer.appendChild(ring);setTimeout(()=>ring.remove(),520);
+ const text=document.createElement("div");text.className="click-float";text.textContent="+1";text.style.left=x+"px";text.style.top=y-8+"px";layer.appendChild(text);setTimeout(()=>text.remove(),720);
+ for(let i=0;i<12;i++){const p=document.createElement("div");p.className="click-particle";p.style.left=x+"px";p.style.top=y+"px";const a=Math.random()*Math.PI*2,d=35+Math.random()*75;p.style.setProperty("--dx",Math.cos(a)*d+"px");p.style.setProperty("--dy",Math.sin(a)*d+"px");layer.appendChild(p);setTimeout(()=>p.remove(),680)}
+}
+function spawnBuyFX(btn){
+ btn.classList.remove("buy-pulse");void btn.offsetWidth;btn.classList.add("buy-pulse");
+ const r=btn.getBoundingClientRect(),f=document.createElement("div");f.className="buy-flash";f.style.setProperty("--x",(r.left+r.width/2)+"px");f.style.setProperty("--y",(r.top+r.height/2)+"px");document.body.appendChild(f);setTimeout(()=>f.remove(),380);buySound()
+}
 let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},claimedQuests:{},daily:0,day:"",gems:25,boostUntil:0,theme:"default",xp:0,level:1};
 const quests=[{id:"click",name:"Klick-Marathon",goal:100, reward:500, text:"Klicke 100-mal."},{id:"buy",name:"Investieren",goal:10,reward:2500,text:"Kaufe 10 Gebäude."},{id:"earn",name:"Erster Erfolg",goal:10000,reward:10000,text:"Verdiene insgesamt 10.000 Geld."}];
 const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon",check:()=>s.money>=100000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=25},{name:"Imperator",check:()=>s.prestige>=3},{name:"Milliardär",check:()=>s.money>=1e9}];
@@ -169,8 +201,8 @@ function localDay(){let d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).
 function dailyReward(){let d=localDay();if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
 function updateBuildingButtons(){document.querySelectorAll("#buildings [data-i]").forEach(b=>{const i=Number(b.dataset.i),ok=unlocked(i),p=price(i);b.disabled=!ok||s.money<p;if(ok)b.textContent=fmt(p)+" kaufen"})}
 function tick(){let g=income()/10;s.money+=g;s.quests.earn+=g;gainXP(g/10);updateStats();updateBuildingButtons()}
-document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}});
-document.getElementById("click").onclick=()=>{s.money+=1;gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=1;save();updateStats();renderQuests();renderAchievements();};
+document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render();setTimeout(()=>{const nb=document.querySelector('[data-i="'+i+'"]');if(nb)spawnBuyFX(nb)},0)}});
+document.getElementById("click").onclick=(e)=>{s.money+=1;gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=1;save();updateStats();renderQuests();renderAchievements();clickSound();spawnClickFX(e.clientX,e.clientY)};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
 document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.gems+=5;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);save();render()}};
