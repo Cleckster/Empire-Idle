@@ -157,7 +157,6 @@ const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon
 try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.clickPower=s.clickPower??1;s.clickUpgrades=s.clickUpgrades??0;s.clickCritLevel=s.clickCritLevel??0;s.clickComboLevel=s.clickComboLevel??0;s.quests=s.quests||{click:0,buy:0,earn:0};s.claimedQuests=s.claimedQuests||{};s.levels=[...(s.levels||[])];while(s.levels.length<defs.length)s.levels.push(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default";s.xp=s.xp??0;s.level=s.level??1;s.claimedQuests=s.claimedQuests||{}}catch{}
 const fmt=n=>n>=1e12?(n/1e12).toFixed(2)+"T":n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(2)+"K":Math.floor(n).toLocaleString("de-DE");
 const mult=()=>1+s.prestige*.15;
-const clickValue=()=>s.clickPower*mult();
 const clickUpgradeCost=()=>Math.floor(100*Math.pow(3.2,s.clickUpgrades));
 const clickCritCost=()=>Math.floor(500*Math.pow(3.8,s.clickCritLevel));
 const clickComboCost=()=>Math.floor(1500*Math.pow(4,s.clickComboLevel));
