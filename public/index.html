@@ -108,7 +108,6 @@ function renderAchievements(){document.getElementById("achievementsList").innerH
 function localDay(){let d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return y+"-"+m+"-"+day}
 function dailyReward(){let d=localDay();if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
 function tick(){let g=income()/10;s.money+=g;s.quests.earn+=g;gainXP(g/10);updateStats()}
-document.getElementById("buildings").onpointerdown=(e)=>{const b=e.target.closest("[data-i]");if(!b)return;e.preventDefault();let i=+b.dataset.i,p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}};
 document.getElementById("buildings").addEventListener("click",(e)=>{const b=e.target.closest("[data-i]");if(!b||b.disabled)return;const i=Number(b.dataset.i),p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}});\ndocument.getElementById("click").onclick=()=>{s.money+=totalMult();gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=totalMult();save();updateStats();renderQuests();renderAchievements();};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
