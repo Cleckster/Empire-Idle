@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Empire Idle</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#080b12;color:#f5f7ff}button{cursor:pointer;border:0}
+.wrap{max-width:1100px;margin:auto;padding:28px 18px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}
+h1{font-size:42px;margin:0;background:linear-gradient(90deg,#fff,#9c8cff);-webkit-background-clip:text;color:transparent}
+.sub{color:#8e97aa;margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.card,.building{background:#111624;border:1px solid #252d40;border-radius:18px;padding:18px;box-shadow:0 10px 30px #0004}.label{font-size:12px;color:#8e97aa;text-transform:uppercase;letter-spacing:.12em}.value{font-size:28px;font-weight:800;margin-top:6px}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.big{min-height:430px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.coin{width:190px;height:190px;border-radius:50%;font-size:27px;font-weight:900;background:radial-gradient(circle at 35% 30%,#fff7b0,#ffd43b 35%,#9c6b00 100%);box-shadow:0 0 60px #f5c54255, inset 0 0 0 9px #fff4;transition:.08s}
+.coin:active{transform:scale(.96)}.income{margin-top:22px;color:#aeb8ca}.buildings{display:grid;gap:10px}.building{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.bname{font-weight:800}.desc{font-size:13px;color:#8e97aa;margin-top:4px}.buy{background:#7667ff;color:white;padding:11px 15px;border-radius:11px;font-weight:800}.buy:disabled{opacity:.35;cursor:not-allowed}
+.actions{display:flex;gap:10px;margin-top:14px}.secondary{background:#1a2130;color:#dce2ef;padding:11px 15px;border-radius:11px}
+.notice{margin-top:15px;color:#818ba0;font-size:13px;text-align:center}.prestige{border:1px solid #4d3f91;background:#17132b}
+@media(max-width:760px){.hero{align-items:start;flex-direction:column}.stats{grid-template-columns:1fr}.grid{grid-template-columns:1fr}h1{font-size:34px}.coin{width:165px;height:165px}}
+</style>
+</head>
+<body><main class="wrap">
+<section class="hero"><div><h1>Empire Idle</h1><div class="sub">Baue dein Imperium. Verdiene auch offline.</div></div><div class="label">MVP • v1.0</div></section>
+<section class="stats">
+<div class="card"><div class="label">Geld</div><div class="value" id="money">0</div></div>
+<div class="card"><div class="label">Pro Sekunde</div><div class="value" id="income">0</div></div>
+<div class="card"><div class="label">Prestige</div><div class="value" id="prestige">0</div></div>
+</section>
+<section class="grid">
+<div class="card big"><button class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
+<div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="margin:7px 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
+</section></main>
+<script>
+const defs=[
+{name:"Bergwerk",desc:"Fördert Rohstoffe.",base:25,prod:1},
+{name:"Farm",desc:"Versorgt deine Wirtschaft.",base:150,prod:7},
+{name:"Werkstatt",desc:"Produziert Waren.",base:900,prod:45},
+{name:"Handelshaus",desc:"Erweitert dein Handelsnetz.",base:6000,prod:280},
+{name:"Megakonzern",desc:"Maximiert die Produktion.",base:50000,prod:2500}
+];
+const key="empireIdleSave";
+let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now()};
+try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.levels=s.levels||Array(defs.length).fill(0)}catch{}
+const fmt=n=>n>=1e12?(n/1e12).toFixed(2)+"T":n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(2)+"K":Math.floor(n).toLocaleString("de-DE");
+const mult=()=>1+s.prestige*.15;
+const price=(i)=>Math.floor(defs[i].base*Math.pow(1.16,s.levels[i]));
+const income=()=>defs.reduce((a,d,i)=>a+d.prod*s.levels[i],0)*mult();
+function render(){
+document.getElementById("money").textContent=fmt(s.money);
+document.getElementById("income").textContent=fmt(income());
+document.getElementById("prestige").textContent=s.prestige+"×";
+document.getElementById("clickInfo").textContent="+"+fmt(mult())+" pro Klick";
+document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i];return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+d.desc+' • +'+fmt(d.prod*mult())+'/s</div></div><button class="buy" data-i="'+i+'" '+(s.money<p?'disabled':'')+'>'+fmt(p)+' kaufen</button></div>'}).join("");
+document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{let i=+b.dataset.i,p=price(i);if(s.money>=p){s.money-=p;s.levels[i]++;save();render()}});
+document.getElementById("prestigeBtn").disabled=s.money<1000000;
+}
+function save(){s.last=Date.now();localStorage.setItem(key,JSON.stringify(s))}
+function tick(){s.money+=income()/10;render()}
+document.getElementById("click").onclick=()=>{s.money+=mult();render();save()};
+document.getElementById("save").onclick=save;
+document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
+document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.levels=Array(defs.length).fill(0);save();render()}};
+const away=Math.max(0,Math.min((Date.now()-(s.last||Date.now()))/1000,8*3600));if(away>10){s.money+=income()*away;document.getElementById("offline").textContent="Offline verdient: +"+fmt(income()*away)}
+render();setInterval(tick,100);
+</script></body></html>
