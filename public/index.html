@@ -90,7 +90,7 @@ document.getElementById("regionMult").textContent="×"+rr.mult;
 document.getElementById("regionInfo").textContent=ri===regions.length-1?"Maximale Region erreicht.":(regions[ri+1].unlock-totalLevels())+" Gebäude-Level bis "+regions[ri+1].name;
 document.getElementById("clickInfo").textContent="+"+fmt(totalMult())+" pro Klick";
 document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock;return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult())+'/s':'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
-document.getElementById("buildings").onclick=(e)=>{const b=e.target.closest("[data-i]");if(!b)return;let i=+b.dataset.i,p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}};
+
 document.getElementById("prestigeBtn").disabled=s.money<1000000;
 document.getElementById("gems").textContent=s.gems+" 💎";
 renderShop();
@@ -103,12 +103,12 @@ function renderAchievements(){document.getElementById("achievementsList").innerH
 function localDay(){let d=new Date(),y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,"0"),day=String(d.getDate()).padStart(2,"0");return y+"-"+m+"-"+day}
 function dailyReward(){let d=localDay();if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
 function tick(){let g=income()/10;s.money+=g;s.quests.earn+=g;gainXP(g/10);render()}
-document.getElementById("click").onclick=()=>{s.money+=totalMult();gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=totalMult();render();save()};
+document.getElementById("buildings").onpointerdown=(e)=>{const b=e.target.closest("[data-i]");if(!b)return;e.preventDefault();let i=+b.dataset.i,p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}};\ndocument.getElementById("click").onclick=()=>{s.money+=totalMult();gainXP(1);s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=totalMult();save();render()};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
 document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.gems+=5;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);save();render()}};
 const away=Math.max(0,Math.min((Date.now()-(s.last||Date.now()))/1000,8*3600));if(away>10){s.money+=income()*away;document.getElementById("offline").textContent="Offline verdient: +"+fmt(income()*away)}
 dailyReward();if(s.theme==="vip")document.body.classList.add("vip");
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tabpage").forEach(x=>x.style.display="none");b.classList.add("active");document.getElementById(b.dataset.tab).style.display="block"});
-render();setInterval(tick,100);
+render();setInterval(tick,500);
 </script></body></html>
