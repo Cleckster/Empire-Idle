@@ -28,13 +28,14 @@ h1{font-size:42px;margin:0;background:linear-gradient(90deg,#fff,#9c8cff);-webki
 <div class="card"><div class="label">Pro Sekunde</div><div class="value" id="income">0</div></div>
 <div class="card"><div class="label">Prestige</div><div class="value" id="prestige">0</div></div>
 </section>
-<div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button></div>
+<div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button><button class="tab" data-tab="shop">Shop</button></div>
 <div id="game" class="tabpage"><section class="grid">
 <div class="card big"><button class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
 <div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="margin:7px 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
 </section></div>
 <div id="quests" class="tabpage" style="display:none"><div class="panel"><div class="label">Tagesquests</div><div id="questsList"></div></div></div>
 <div id="achievements" class="tabpage" style="display:none"><div class="panel"><div class="label">Meilensteine</div><div id="achievementsList"></div></div></div>
+<div id="shop" class="tabpage" style="display:none"><div class="panel"><div style="display:flex;justify-content:space-between;align-items:center"><div><div class="label">Empire Shop</div><div class="small">Premium-Währung: <span class="gold" id="gems">0 💎</span></div></div></div><div id="shopList"></div></div></div>
 </main>
 <script>
 const defs=[
@@ -45,35 +46,41 @@ const defs=[
 {name:"Megakonzern",desc:"Maximiert die Produktion.",base:50000,prod:2500}
 ];
 const key="empireIdleSave";
-let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},daily:0,day:""};
+let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},daily:0,day:"",gems:25,boostUntil:0,theme:"default"};
 const quests=[{id:"click",name:"Klick-Marathon",goal:100, reward:500, text:"Klicke 100-mal."},{id:"buy",name:"Investieren",goal:10,reward:2500,text:"Kaufe 10 Gebäude."},{id:"earn",name:"Erster Erfolg",goal:10000,reward:10000,text:"Verdiene insgesamt 10.000 Geld."}];
 const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon",check:()=>s.money>=100000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=25},{name:"Imperator",check:()=>s.prestige>=3},{name:"Milliardär",check:()=>s.money>=1e9}];
-try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.levels=s.levels||Array(defs.length).fill(0)}catch{}
+try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.levels=s.levels||Array(defs.length).fill(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default"}catch{}
 const fmt=n=>n>=1e12?(n/1e12).toFixed(2)+"T":n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(2)+"K":Math.floor(n).toLocaleString("de-DE");
 const mult=()=>1+s.prestige*.15;
+const boost=()=>Date.now()<s.boostUntil?2:1;
+const totalMult=()=>mult()*boost();
+const shopItems=[{name:"2× Produktion",desc:"Verdoppelt Einkommen für 5 Minuten.",cost:10,action:()=>{if(s.gems>=10){s.gems-=10;s.boostUntil=Math.max(Date.now(),s.boostUntil)+300000;save();render()}}},{name:"Kapital-Spritze",desc:"Sofort 60 Sekunden deines aktuellen Einkommens.",cost:8,action:()=>{if(s.gems>=8){s.gems-=8;s.money+=income()*60;save();render()}}},{name:"VIP-Farbe",desc:"Schaltet einen goldenen VIP-Look frei.",cost:30,action:()=>{if(s.gems>=30){s.gems-=30;s.theme="vip";document.body.classList.add("vip");save();render()}}}];
 const price=(i)=>Math.floor(defs[i].base*Math.pow(1.16,s.levels[i]));
-const income=()=>defs.reduce((a,d,i)=>a+d.prod*s.levels[i],0)*mult();
+const income=()=>defs.reduce((a,d,i)=>a+d.prod*s.levels[i],0)*totalMult();
 function render(){
 document.getElementById("money").textContent=fmt(s.money);
 document.getElementById("income").textContent=fmt(income());
 document.getElementById("prestige").textContent=s.prestige+"×";
-document.getElementById("clickInfo").textContent="+"+fmt(mult())+" pro Klick";
+document.getElementById("clickInfo").textContent="+"+fmt(totalMult())+" pro Klick";
 document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i];return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+d.desc+' • +'+fmt(d.prod*mult())+'/s</div></div><button class="buy" data-i="'+i+'" '+(s.money<p?'disabled':'')+'>'+fmt(p)+' kaufen</button></div>'}).join("");
 document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{let i=+b.dataset.i,p=price(i);if(s.money>=p){s.money-=p;s.levels[i]++;s.quests.buy++;save();render()}});
 document.getElementById("prestigeBtn").disabled=s.money<1000000;
+document.getElementById("gems").textContent=s.gems+" 💎";
+renderShop();
 renderQuests();renderAchievements();
 }
 function save(){s.last=Date.now();localStorage.setItem(key,JSON.stringify(s))}
 function renderQuests(){document.getElementById("questsList").innerHTML=quests.map(q=>{let v=s.quests[q.id]||0,done=v>=q.goal;return '<div class="row"><div><b>'+q.name+'</b><div class="small">'+q.text+' Belohnung: <span class="gold">'+fmt(q.reward)+'</span></div><div class="progress"><div class="bar" style="width:'+Math.min(100,v/q.goal*100)+'%"></div></div></div><div class="'+(done?'done':'pill')+'">'+(done?'✓ Fertig':v+'/'+q.goal)+'</div></div>'}).join("")}
+function renderShop(){document.getElementById("shopList").innerHTML=shopItems.map((x,i)=>'<div class="row"><div><b>'+x.name+'</b><div class="small">'+x.desc+'</div></div><button class="buy" '+(s.gems<x.cost?'disabled':'')+' data-shop="'+i+'">'+x.cost+' 💎</button></div>').join("");document.querySelectorAll("[data-shop]").forEach(b=>b.onclick=()=>shopItems[+b.dataset.shop].action())}
 function renderAchievements(){document.getElementById("achievementsList").innerHTML=achievements.map(a=>'<div class="row"><b>'+a.name+'</b><span class="'+(a.check()?'done':'pill')+'">'+(a.check()?'✓ Freigeschaltet':'Gesperrt')+'</span></div>').join("")}
 function dailyReward(){let d=new Date().toISOString().slice(0,10);if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
 function tick(){s.money+=income()/10;render()}
-document.getElementById("click").onclick=()=>{s.money+=mult();s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=mult();if(s.quests.click>=100&&s.quests.click<101){s.money+=500}render();save()};
+document.getElementById("click").onclick=()=>{s.money+=totalMult();s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=totalMult();if(s.quests.click>=100&&s.quests.click<101){s.money+=500}render();save()};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
-document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.levels=Array(defs.length).fill(0);save();render()}};
+document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.gems+=5;s.levels=Array(defs.length).fill(0);save();render()}};
 const away=Math.max(0,Math.min((Date.now()-(s.last||Date.now()))/1000,8*3600));if(away>10){s.money+=income()*away;document.getElementById("offline").textContent="Offline verdient: +"+fmt(income()*away)}
-dailyReward();
+dailyReward();if(s.theme==="vip")document.body.classList.add("vip");
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tabpage").forEach(x=>x.style.display="none");b.classList.add("active");document.getElementById(b.dataset.tab).style.display="block"});
 render();setInterval(tick,100);
 </script></body></html>
