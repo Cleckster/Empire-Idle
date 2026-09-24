@@ -16,7 +16,10 @@ h1{font-size:42px;margin:0;background:linear-gradient(90deg,#fff,#9c8cff);-webki
 .actions{display:flex;gap:10px;margin-top:14px}.secondary{background:#1a2130;color:#dce2ef;padding:11px 15px;border-radius:11px}
 .notice{margin-top:15px;color:#818ba0;font-size:13px;text-align:center}.prestige{border:1px solid #4d3f91;background:#17132b}
 @media(max-width:760px){.hero{align-items:start;flex-direction:column}.stats{grid-template-columns:1fr}.grid{grid-template-columns:1fr}h1{font-size:34px}.coin{width:165px;height:165px}}
-</style>
+
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab{background:#111624;color:#aeb8ca;border:1px solid #252d40;padding:10px 14px;border-radius:11px;font-weight:800}.tab.active{background:#7667ff;color:#fff}
+.panel{background:#111624;border:1px solid #252d40;border-radius:18px;padding:18px;margin-bottom:14px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #202738}.row:last-child{border-bottom:0}.pill{font-size:12px;padding:5px 8px;border-radius:999px;background:#20283a;color:#aeb8ca}.done{color:#71e6a4}.progress{height:7px;background:#202738;border-radius:9px;overflow:hidden;margin-top:8px}.bar{height:100%;background:#7667ff;width:0}.gold{color:#ffd76a}.small{font-size:12px;color:#8e97aa}
+
 </head>
 <body><main class="wrap">
 <section class="hero"><div><h1>Empire Idle</h1><div class="sub">Baue dein Imperium. Verdiene auch offline.</div></div><div class="label">MVP • v1.0</div></section>
@@ -25,10 +28,14 @@ h1{font-size:42px;margin:0;background:linear-gradient(90deg,#fff,#9c8cff);-webki
 <div class="card"><div class="label">Pro Sekunde</div><div class="value" id="income">0</div></div>
 <div class="card"><div class="label">Prestige</div><div class="value" id="prestige">0</div></div>
 </section>
-<section class="grid">
+<div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button></div>
+<div id="game" class="tabpage"><section class="grid">
 <div class="card big"><button class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
 <div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="margin:7px 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
-</section></main>
+</section></div>
+<div id="quests" class="tabpage" style="display:none"><div class="panel"><div class="label">Tagesquests</div><div id="questsList"></div></div></div>
+<div id="achievements" class="tabpage" style="display:none"><div class="panel"><div class="label">Meilensteine</div><div id="achievementsList"></div></div></div>
+</main>
 <script>
 const defs=[
 {name:"Bergwerk",desc:"Fördert Rohstoffe.",base:25,prod:1},
@@ -38,7 +45,9 @@ const defs=[
 {name:"Megakonzern",desc:"Maximiert die Produktion.",base:50000,prod:2500}
 ];
 const key="empireIdleSave";
-let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now()};
+let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},daily:0,day:""};
+const quests=[{id:"click",name:"Klick-Marathon",goal:100, reward:500, text:"Klicke 100-mal."},{id:"buy",name:"Investieren",goal:10,reward:2500,text:"Kaufe 10 Gebäude."},{id:"earn",name:"Erster Erfolg",goal:10000,reward:10000,text:"Verdiene insgesamt 10.000 Geld."}];
+const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon",check:()=>s.money>=100000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=25},{name:"Imperator",check:()=>s.prestige>=3},{name:"Milliardär",check:()=>s.money>=1e9}];
 try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.levels=s.levels||Array(defs.length).fill(0)}catch{}
 const fmt=n=>n>=1e12?(n/1e12).toFixed(2)+"T":n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(2)+"K":Math.floor(n).toLocaleString("de-DE");
 const mult=()=>1+s.prestige*.15;
@@ -50,15 +59,21 @@ document.getElementById("income").textContent=fmt(income());
 document.getElementById("prestige").textContent=s.prestige+"×";
 document.getElementById("clickInfo").textContent="+"+fmt(mult())+" pro Klick";
 document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i];return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+d.desc+' • +'+fmt(d.prod*mult())+'/s</div></div><button class="buy" data-i="'+i+'" '+(s.money<p?'disabled':'')+'>'+fmt(p)+' kaufen</button></div>'}).join("");
-document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{let i=+b.dataset.i,p=price(i);if(s.money>=p){s.money-=p;s.levels[i]++;save();render()}});
+document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{let i=+b.dataset.i,p=price(i);if(s.money>=p){s.money-=p;s.levels[i]++;s.quests.buy++;save();render()}});
 document.getElementById("prestigeBtn").disabled=s.money<1000000;
+renderQuests();renderAchievements();
 }
 function save(){s.last=Date.now();localStorage.setItem(key,JSON.stringify(s))}
+function renderQuests(){document.getElementById("questsList").innerHTML=quests.map(q=>{let v=s.quests[q.id]||0,done=v>=q.goal;return '<div class="row"><div><b>'+q.name+'</b><div class="small">'+q.text+' Belohnung: <span class="gold">'+fmt(q.reward)+'</span></div><div class="progress"><div class="bar" style="width:'+Math.min(100,v/q.goal*100)+'%"></div></div></div><div class="'+(done?'done':'pill')+'">'+(done?'✓ Fertig':v+'/'+q.goal)+'</div></div>'}).join("")}
+function renderAchievements(){document.getElementById("achievementsList").innerHTML=achievements.map(a=>'<div class="row"><b>'+a.name+'</b><span class="'+(a.check()?'done':'pill')+'">'+(a.check()?'✓ Freigeschaltet':'Gesperrt')+'</span></div>').join("")}
+function dailyReward(){let d=new Date().toISOString().slice(0,10);if(s.day!==d){s.day=d;s.daily=1;s.money+=1000*mult();document.getElementById("offline").textContent="Tagesbonus: +"+fmt(1000*mult());save()}}
 function tick(){s.money+=income()/10;render()}
-document.getElementById("click").onclick=()=>{s.money+=mult();render();save()};
+document.getElementById("click").onclick=()=>{s.money+=mult();s.clicks++;s.quests.click=Math.min(100,s.clicks);s.quests.earn+=mult();if(s.quests.click>=100&&s.quests.click<101){s.money+=500}render();save()};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
 document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.levels=Array(defs.length).fill(0);save();render()}};
 const away=Math.max(0,Math.min((Date.now()-(s.last||Date.now()))/1000,8*3600));if(away>10){s.money+=income()*away;document.getElementById("offline").textContent="Offline verdient: +"+fmt(income()*away)}
+dailyReward();
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tabpage").forEach(x=>x.style.display="none");b.classList.add("active");document.getElementById(b.dataset.tab).style.display="block"});
 render();setInterval(tick,100);
 </script></body></html>
