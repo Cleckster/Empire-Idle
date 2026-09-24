@@ -265,6 +265,6 @@ document.getElementById("reset").onclick=()=>{if(confirm("Spielstand wirklich lÃ
 document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=1000000){s.prestige++;s.money=0;s.gems+=5;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);s.clickPower=1;s.clickUpgrades=0;s.clickCritLevel=0;s.clickComboLevel=0;s.researchPoints+=Math.floor(5+s.prestige*2);s.research={};save();render()}};
 const away=Math.max(0,Math.min((Date.now()-(s.last||Date.now()))/1000,8*3600));if(away>10){s.money+=income()*away;document.getElementById("offline").textContent="Offline verdient: +"+fmt(income()*away)}
 dailyReward();maybeEvent();if(s.theme==="vip")document.body.classList.add("vip");
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tabpage").forEach(x=>x.style.display="none");b.classList.add("active");document.getElementById(b.dataset.tab).style.display="block"});
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tabpage").forEach(x=>x.style.display="none");b.classList.add("active");const page=document.getElementById(b.dataset.tab);page.style.display=b.dataset.tab==="game"?"flex":"block";});
 render();setInterval(()=>{tick();renderEvents()},500);
 </script></body></html>
