@@ -86,6 +86,41 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
  .tab{white-space:nowrap}
  .coin{width:170px;height:170px}
 }
+/* ===== Empire Visual ===== */
+.empire-visual{position:relative;min-height:250px;margin-bottom:10px;padding:14px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#111a2c 0%,#0a0f1b 72%);border:1px solid #29354d;box-shadow:inset 0 1px #ffffff08,0 12px 30px #0005}
+.empire-sky{position:absolute;inset:0;background:radial-gradient(circle at 76% 22%,#7567ff22 0,transparent 20%),radial-gradient(circle at 20% 18%,#6b7cff14 0,transparent 24%);pointer-events:none}
+.empire-stars{position:absolute;inset:0;opacity:.7;background-image:radial-gradient(circle,#ffffff88 1px,transparent 1px);background-size:73px 61px;pointer-events:none}
+.empire-title{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.empire-scene{position:relative;z-index:1;height:190px;display:flex;align-items:flex-end;gap:7px;padding:0 8px 13px;border-bottom:1px solid #36445d;overflow:hidden}
+.empire-ground{position:absolute;left:0;right:0;bottom:0;height:36px;background:linear-gradient(180deg,#151d2d,#0b111c);border-top:1px solid #34415a;box-shadow:0 -10px 35px #5967ff10}
+.empire-building{position:relative;width:44px;min-width:44px;height:145px;display:flex;align-items:flex-end;justify-content:center;opacity:.16;filter:grayscale(1);transition:.35s}
+.empire-building.unlocked{opacity:1;filter:none}
+.empire-building.new{animation:empireRise .65s cubic-bezier(.2,.8,.2,1)}
+.empire-building .ebody{position:relative;width:var(--w);height:var(--h);border:1px solid #65739a;background:linear-gradient(135deg,#303c5b,#111827);box-shadow:0 0 18px #7667ff18,inset 4px 0 #ffffff08}
+.empire-building .ebody:before{content:"";position:absolute;inset:9px 7px 7px;background:repeating-linear-gradient(180deg,#9c8cff66 0 4px,transparent 4px 13px),repeating-linear-gradient(90deg,#8e9cff55 0 5px,transparent 5px 12px);opacity:.75}
+.empire-building .ebody:after{content:"";position:absolute;left:50%;bottom:100%;width:2px;height:var(--antenna,0px);background:#9d91ff;box-shadow:0 0 10px #9d91ff}
+.empire-building .etag{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);font-size:7px;font-weight:900;color:#cfd6e5;white-space:nowrap;opacity:.85}
+.empire-building.mine .ebody{--w:32px;--h:54px}
+.empire-building.farm .ebody{--w:39px;--h:35px}
+.empire-building.workshop .ebody{--w:38px;--h:65px}
+.empire-building.trade .ebody{--w:43px;--h:72px}
+.empire-building.steel .ebody{--w:34px;--h:91px;--antenna:18px}
+.empire-building.port .ebody{--w:42px;--h:46px}
+.empire-building.bank .ebody{--w:42px;--h:78px}
+.empire-building.skyline .ebody{--w:34px;--h:125px}
+.empire-building.spaceport .ebody{--w:46px;--h:68px;--antenna:26px}
+.empire-building.tech .ebody{--w:40px;--h:105px;--antenna:22px}
+.empire-building.orbit .ebody{--w:34px;--h:120px;--antenna:38px}
+.empire-building.star .ebody{--w:46px;--h:137px;--antenna:45px}
+.empire-building.moon .ebody{--w:41px;--h:90px;--antenna:30px}
+.empire-building.dyson .ebody{--w:38px;--h:115px;--antenna:48px}
+.empire-building.dimension .ebody{--w:34px;--h:128px;--antenna:55px}
+.empire-building.multiverse .ebody{--w:48px;--h:145px;--antenna:65px}
+.empire-building.locked .ebody{background:linear-gradient(135deg,#1b2231,#0c1019);border-color:#30394d}
+.empire-building.locked .etag{color:#5d6679}
+.empire-progress{position:relative;z-index:2;display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:11px;color:#8995ad}
+@keyframes empireRise{0%{transform:translateY(55px) scale(.65);opacity:0}55%{transform:translateY(-5px) scale(1.03);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@media(max-width:900px){.empire-visual{min-height:235px}.empire-scene{overflow-x:auto;justify-content:flex-start}.empire-building{min-width:42px}}
 /* ===== Interaction FX ===== */
 .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
 .click-particle{position:absolute;width:7px;height:7px;border-radius:50%;background:#9d91ff;box-shadow:0 0 12px #8b7dff;animation:particleFly .65s ease-out forwards}
@@ -110,7 +145,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 <div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button><button class="tab" data-tab="shop">Shop</button><button class="tab" data-tab="research">Forschung</button><button class="tab" data-tab="events">Events</button><button class="tab" data-tab="settings">⚙ Einstellungen</button></div>
 <div id="game" class="tabpage"><div class="panel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><div class="label">Aktive Region</div><b id="regionName">Kernland</b><div class="small" id="regionInfo"></div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end"><span class="pill" id="buildingLevelTotal">0 Gebäude-Level</span><span class="pill" id="regionMult">×1</span></div></div></div><section class="grid">
 <div class="card big"><div style="position:relative;z-index:1;text-align:center;margin-bottom:8px"><div class="label">Deine Wirtschaft</div><div class="small">Klicke, um dein Imperium zu beschleunigen</div></div><button type="button" class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="click-upgrade"><div><div class="label">Klick-Upgrades</div><div class="small" id="clickUpgradeInfo">Kraft Lv.0</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="buy" id="clickUpgradeBtn">100 • Kraft</button><button class="buy" id="clickCritBtn">500 • Krit</button><button class="buy" id="clickComboBtn">1.500 • Combo</button></div></div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
-<div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin:7px 0 5px"><b>Prestige-Level <span id="prestigeLevel">0</span></b><span class="pill" id="prestigeMult">×1,00</span></div><div class="small" style="margin-bottom:10px">Nächstes Prestige: <span class="gold" id="prestigeCost">1,00M</span> Geld</div><div style="margin:0 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren. Die Kosten steigen exponentiell mit jedem Prestige.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
+<div><div class="empire-visual" id="empireVisual"></div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin:7px 0 5px"><b>Prestige-Level <span id="prestigeLevel">0</span></b><span class="pill" id="prestigeMult">×1,00</span></div><div class="small" style="margin-bottom:10px">Nächstes Prestige: <span class="gold" id="prestigeCost">1,00M</span> Geld</div><div style="margin:0 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren. Die Kosten steigen exponentiell mit jedem Prestige.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
 </section></div>
 <div id="quests" class="tabpage" style="display:none"><div class="panel"><div class="label">Tagesquests</div><div id="questsList"></div></div></div>
 <div id="achievements" class="tabpage" style="display:none"><div class="panel"><div class="label">Meilensteine</div><div id="achievementsList"></div></div></div>
@@ -240,12 +275,20 @@ document.getElementById("prestigeBtn").textContent="Prestige durchführen • "+
 document.getElementById("gems").textContent=s.gems+" 💎";document.getElementById("researchPoints").textContent=fmt(s.researchPoints);
 }
 function buildingSynergy(i){let bonus=0;if(i>0&&s.levels[i-1]>0)bonus+=Math.min(.5,s.levels[i-1]*.01);if(i+1<defs.length&&unlocked(i+1)&&s.levels[i+1]>0)bonus+=Math.min(.25,s.levels[i+1]*.005);return 1+bonus}
+function renderEmpireVisual(){
+ const el=document.getElementById("empireVisual");if(!el)return;
+ const classes=["mine","farm","workshop","trade","steel","port","bank","skyline","spaceport","tech","orbit","star","moon","dyson","dimension","multiverse"];
+ const names=["Mine","Farm","Werk","Handel","Stahl","Hafen","Bank","Skyline","Raumhafen","Tech","Orbit","Sterne","Mond","Dyson","Portal","Multiversum"];
+ const ri=regionForLevels(),built=s.levels.filter(v=>v>0).length;
+ el.innerHTML='<div class="empire-sky"></div><div class="empire-stars"></div><div class="empire-title"><div><div class="label">Dein wachsendes Empire</div><b>'+built+' von '+defs.length+' Gebäuden errichtet</b></div><span class="pill">'+regions[ri].name+'</span></div><div class="empire-scene"><div class="empire-ground"></div>'+defs.map((d,i)=>{const can=unlocked(i),has=s.levels[i]>0;return '<div class="empire-building '+classes[i]+' '+(has?'unlocked ':'')+(!can?'locked':'')+(has&&s.levels[i]===1?' new':'')+'" title="'+d.name+' • '+(has?'Lv.'+s.levels[i]:'noch nicht gebaut')+'"><div class="ebody"></div><span class="etag">'+names[i]+'</span></div>'}).join('')+'</div><div class="empire-progress"><span>Früher: Bergwerk & Farm</span><span>Später: '+defs[defs.length-1].name+'</span></div>';
+}
 function renderBuildings(){
 document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock,sy=buildingSynergy(i);return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult()*sy)+'/s • Synergie ×'+sy.toFixed(2):'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button type="button" class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
 }
 function renderSettings(){const el=document.getElementById("settingsList");if(!el)return;el.innerHTML='<div class="row"><div><b>Sounds</b><div class="small">Klick- und Kaufgeräusche aktivieren.</div></div><button class="secondary" data-setting="sound">' +(s.settings.sound?"An":"Aus")+'</button></div><div class="row"><div><b>Reset-Bestätigung</b><div class="small">Vor dem Löschen des Spielstands nachfragen.</div></div><button class="secondary" data-setting="confirmReset">' +(s.settings.confirmReset?"An":"Aus")+'</button></div><div class="row"><div><b>Spielstand</b><div class="small">Setzt den lokalen Spielstand vollständig zurück.</div></div><button class="quest-claim" id="settingsReset">Spielstand löschen</button></div>';el.querySelectorAll("[data-setting]").forEach(b=>b.onclick=()=>{const k=b.dataset.setting;s.settings[k]=!s.settings[k];save();renderSettings()});document.getElementById("settingsReset").onclick=()=>{if(!s.settings.confirmReset||confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}}}
 function render(){
 updateStats();
+renderEmpireVisual();
 renderBuildings();
 renderShop();
 renderResearch();
