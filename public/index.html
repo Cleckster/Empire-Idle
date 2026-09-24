@@ -7,15 +7,15 @@
 *{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:#080b12;color:#f5f7ff}button{cursor:pointer;border:0}
 .wrap{max-width:1100px;margin:auto;padding:28px 18px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:end;margin-bottom:22px}
 h1{font-size:42px;margin:0;background:linear-gradient(90deg,#fff,#9c8cff);-webkit-background-clip:text;color:transparent}
-.sub{color:#8e97aa;margin-top:6px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:18px}
+.sub{color:#8e97aa;margin-top:6px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:18px}
 .card,.building{background:#111624;border:1px solid #252d40;border-radius:18px;padding:18px;box-shadow:0 10px 30px #0004}.label{font-size:12px;color:#8e97aa;text-transform:uppercase;letter-spacing:.12em}.value{font-size:28px;font-weight:800;margin-top:6px}
 .grid{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.big{min-height:430px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .coin{width:190px;height:190px;border-radius:50%;font-size:27px;font-weight:900;background:radial-gradient(circle at 35% 30%,#fff7b0,#ffd43b 35%,#9c6b00 100%);box-shadow:0 0 60px #f5c54255, inset 0 0 0 9px #fff4;transition:.08s}
-.coin:active{transform:scale(.96)}.income{margin-top:22px;color:#aeb8ca}.buildings{display:grid;gap:10px}.building{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.coin:active{transform:scale(.96)}.income{margin-top:22px;color:#aeb8ca}.buildings{display:grid;gap:10px}.building{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center}.building>div{min-width:0}.building .buy{white-space:nowrap;min-width:132px}
 .bname{font-weight:800}.desc{font-size:13px;color:#8e97aa;margin-top:4px}.buy{background:#7667ff;color:white;padding:11px 15px;border-radius:11px;font-weight:800}.buy:disabled{opacity:.35;cursor:not-allowed}
 .actions{display:flex;gap:10px;margin-top:14px}.secondary{background:#1a2130;color:#dce2ef;padding:11px 15px;border-radius:11px}
 .notice{margin-top:15px;color:#818ba0;font-size:13px;text-align:center}.prestige{border:1px solid #4d3f91;background:#17132b}
-@media(max-width:760px){.hero{align-items:start;flex-direction:column}.stats{grid-template-columns:1fr}.grid{grid-template-columns:1fr}h1{font-size:34px}.coin{width:165px;height:165px}}
+@media(max-width:900px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.grid{grid-template-columns:1fr}}@media(max-width:760px){.hero{align-items:start;flex-direction:column}.stats{grid-template-columns:1fr}.building{grid-template-columns:1fr}.building .buy{width:100%;min-width:0}h1{font-size:34px}.coin{width:165px;height:165px}}
 
 .nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}.tab{background:#111624;color:#aeb8ca;border:1px solid #252d40;padding:10px 14px;border-radius:11px;font-weight:800}.tab.active{background:#7667ff;color:#fff}
 .panel{background:#111624;border:1px solid #252d40;border-radius:18px;padding:18px;margin-bottom:14px}.row{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid #202738}.row:last-child{border-bottom:0}.pill{font-size:12px;padding:5px 8px;border-radius:999px;background:#20283a;color:#aeb8ca}.done{color:#71e6a4}.progress{height:7px;background:#202738;border-radius:9px;overflow:hidden;margin-top:8px}.bar{height:100%;background:#7667ff;width:0}.gold{color:#ffd76a}.small{font-size:12px;color:#8e97aa}
@@ -90,7 +90,7 @@ document.getElementById("regionMult").textContent="×"+rr.mult;
 document.getElementById("regionInfo").textContent=ri===regions.length-1?"Maximale Region erreicht.":(regions[ri+1].unlock-totalLevels())+" Gebäude-Level bis "+regions[ri+1].name;
 document.getElementById("clickInfo").textContent="+"+fmt(totalMult())+" pro Klick";
 document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock;return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult())+'/s':'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
-document.querySelectorAll("[data-i]").forEach(b=>b.onclick=()=>{let i=+b.dataset.i,p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}});
+document.getElementById("buildings").onclick=(e)=>{const b=e.target.closest("[data-i]");if(!b)return;let i=+b.dataset.i,p=price(i);if(s.money>=p&&unlocked(i)){s.money-=p;s.levels[i]++;s.quests.buy++;gainXP(Math.max(5,Math.floor(p/100)));save();render()}};
 document.getElementById("prestigeBtn").disabled=s.money<1000000;
 document.getElementById("gems").textContent=s.gems+" 💎";
 renderShop();
