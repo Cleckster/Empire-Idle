@@ -50,11 +50,11 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .grid{min-height:0;flex:1;grid-template-columns:minmax(390px,.82fr) minmax(500px,1.18fr);gap:12px}
 .big{height:100%;min-height:0;padding:20px;position:relative;overflow:hidden}
 .big:before{content:"";position:absolute;width:300px;height:300px;top:35%;left:50%;transform:translate(-50%,-50%);background:#7667ff18;border-radius:50%;filter:blur(35px);pointer-events:none}
-.coin{position:relative;z-index:1;transform:translateY(46px);width:min(360px,78%);height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
+.coin{position:relative;z-index:1;transform:translateY(30px);width:min(360px,78%);height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
 .coin:before{content:"EMPIRE";position:absolute;inset:0;display:grid;place-items:center;font-size:28px;letter-spacing:.28em;font-weight:900;color:#f2f4ff;text-shadow:0 0 18px #8d80ff88;pointer-events:none}
 .coin:after{content:"CLICK TO EARN";position:absolute;left:0;right:0;bottom:17px;text-align:center;font-size:9px;letter-spacing:.28em;font-weight:800;color:#8995ad;pointer-events:none}
-.coin:hover{transform:translateY(43px);border-color:#7166d9;box-shadow:0 22px 55px #000b,0 0 30px #7065ff25,inset 0 1px #ffffff18}
-.coin:active{transform:translateY(49px) scale(.985);box-shadow:0 10px 25px #0009,inset 0 5px 18px #0008}
+.coin:hover{transform:translateY(27px);border-color:#7166d9;box-shadow:0 22px 55px #000b,0 0 30px #7065ff25,inset 0 1px #ffffff18}
+.coin:active{transform:translateY(33px) scale(.985);box-shadow:0 10px 25px #0009,inset 0 5px 18px #0008}
 .coin:focus-visible{outline:2px solid #9d94ff;outline-offset:4px}
 .income{position:relative;z-index:1;margin-top:15px;font-size:14px;font-weight:700;color:#c9d0df}
 .actions{position:relative;z-index:1;margin-top:auto;padding-top:14px}
@@ -145,7 +145,7 @@ function clickSound(){tone(520,.09,"sine",.035,180);tone(780,.07,"triangle",.018
 function buySound(){tone(260,.12,"triangle",.045,180);setTimeout(()=>tone(520,.16,"sine",.035,260),55)}
 function spawnClickFX(x,y){
  const layer=document.getElementById("fxLayer"),ring=document.createElement("div");ring.className="click-ring";ring.style.left=x+"px";ring.style.top=y+"px";layer.appendChild(ring);setTimeout(()=>ring.remove(),520);
- const text=document.createElement("div");text.className="click-float";text.textContent="+1";text.style.left=x+"px";text.style.top=y-8+"px";layer.appendChild(text);setTimeout(()=>text.remove(),720);
+ const text=document.createElement("div");text.className="click-float";text.textContent="+1";text.style.left=x+"px";text.style.top=y-38+"px";layer.appendChild(text);setTimeout(()=>text.remove(),720);
  for(let i=0;i<12;i++){const p=document.createElement("div");p.className="click-particle";p.style.left=x+"px";p.style.top=y+"px";const a=Math.random()*Math.PI*2,d=35+Math.random()*75;p.style.setProperty("--dx",Math.cos(a)*d+"px");p.style.setProperty("--dy",Math.sin(a)*d+"px");layer.appendChild(p);setTimeout(()=>p.remove(),680)}
 }
 function spawnBuyFX(btn){
