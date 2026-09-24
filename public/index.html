@@ -53,17 +53,24 @@ const defs=[
 {name:"Sternenkonzern",desc:"Dein Imperium wird interstellar.",base:500000000000,prod:1500000000,region:3}
 ];
 const key="empireIdleSave";
-let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},daily:0,day:"",gems:25,boostUntil:0,theme:"default"};
+let s={money:0,prestige:0,levels:Array(defs.length).fill(0),last:Date.now(),clicks:0,quests:{click:0,buy:0,earn:0},daily:0,day:"",gems:25,boostUntil:0,theme:"default",xp:0,level:1};
 const quests=[{id:"click",name:"Klick-Marathon",goal:100, reward:500, text:"Klicke 100-mal."},{id:"buy",name:"Investieren",goal:10,reward:2500,text:"Kaufe 10 Gebäude."},{id:"earn",name:"Erster Erfolg",goal:10000,reward:10000,text:"Verdiene insgesamt 10.000 Geld."}];
 const achievements=[{name:"Erster Schritt",check:()=>s.money>=100},{name:"Tycoon",check:()=>s.money>=100000},{name:"Baumeister",check:()=>s.levels.reduce((a,b)=>a+b,0)>=25},{name:"Imperator",check:()=>s.prestige>=3},{name:"Milliardär",check:()=>s.money>=1e9}];
-try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.levels=s.levels||Array(defs.length).fill(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default"}catch{}
+try{s={...s,...JSON.parse(localStorage.getItem(key)||"{}")};s.levels=[...(s.levels||[])];while(s.levels.length<defs.length)s.levels.push(0);s.gems=s.gems??25;s.boostUntil=s.boostUntil??0;s.theme=s.theme||"default";s.xp=s.xp??0;s.level=s.level??1}catch{}
 const fmt=n=>n>=1e12?(n/1e12).toFixed(2)+"T":n>=1e9?(n/1e9).toFixed(2)+"B":n>=1e6?(n/1e6).toFixed(2)+"M":n>=1e3?(n/1e3).toFixed(2)+"K":Math.floor(n).toLocaleString("de-DE");
 const mult=()=>1+s.prestige*.15;
 const boost=()=>Date.now()<s.boostUntil?2:1;
-const totalMult=()=>mult()*boost();
+const regions=[{name:"Kernland",unlock:0,mult:1},{name:"Handelsbund",unlock:20,mult:1.5},{name:"Weltmetropole",unlock:50,mult:2.5},{name:"Orbitalzone",unlock:100,mult:5}];
+const totalLevels=()=>s.levels.reduce((a,b)=>a+b,0);
+const regionForLevels=()=>Math.min(regions.length-1,regions.reduce((best,r,i)=>totalLevels()>=r.unlock?i:best,0));
+const regionMult=()=>regions[regionForLevels()].mult;
+const totalMult=()=>mult()*boost()*regionMult();
+const xpNeeded=()=>Math.floor(100*Math.pow(1.22,s.level-1));
+function gainXP(n){s.xp+=Math.max(0,n);while(s.xp>=xpNeeded()){s.xp-=xpNeeded();s.level++;if(s.level%5===0)s.gems+=2}}
 const shopItems=[{name:"2× Produktion",desc:"Verdoppelt Einkommen für 5 Minuten.",cost:10,action:()=>{if(s.gems>=10){s.gems-=10;s.boostUntil=Math.max(Date.now(),s.boostUntil)+300000;save();render()}}},{name:"Kapital-Spritze",desc:"Sofort 60 Sekunden deines aktuellen Einkommens.",cost:8,action:()=>{if(s.gems>=8){s.gems-=8;s.money+=income()*60;save();render()}}},{name:"VIP-Farbe",desc:"Schaltet einen goldenen VIP-Look frei.",cost:30,action:()=>{if(s.gems>=30){s.gems-=30;s.theme="vip";document.body.classList.add("vip");save();render()}}}];
 const price=(i)=>Math.floor(defs[i].base*Math.pow(1.16,s.levels[i]));
-const income=()=>defs.reduce((a,d,i)=>a+d.prod*s.levels[i],0)*totalMult();
+const unlocked=(i)=>defs[i].region<=regionForLevels();
+const income=()=>defs.reduce((a,d,i)=>a+(unlocked(i)?d.prod*s.levels[i]:0),0)*totalMult();
 function render(){
 document.getElementById("money").textContent=fmt(s.money);
 document.getElementById("income").textContent=fmt(income());
