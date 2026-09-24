@@ -202,7 +202,7 @@ const prestigeCost=()=>Math.floor(1000000*Math.pow(5,s.prestige));
 const price=(i)=>Math.floor(defs[i].base*Math.pow(1.16,s.levels[i]));
 const unlocked=(i)=>defs[i].region<=regionForLevels();
 for(let i=0;i<defs.length;i++)if(defs[i].region>regionForLevels()&&s.levels[i]>0)s.levels[i]=0;
-const income=()=>defs.reduce((a,d,i)=>a+(unlocked(i)?d.prod*s.levels[i]:0),0)*totalMult();
+const income=()=>defs.reduce((a,d,i)=>a+(unlocked(i)?d.prod*s.levels[i]*buildingSynergy(i):0),0)*totalMult();
 const researchDefs=[
 {id:"economy",name:"Makroökonomie",desc:"+10% Gesamteinkommen pro Stufe.",max:5,cost:i=>5+i*7},
 {id:"industry",name:"Industrieautomatisierung",desc:"+15% Gesamteinkommen pro Stufe.",max:5,cost:i=>8+i*10},
@@ -239,8 +239,9 @@ document.getElementById("prestigeBtn").disabled=s.money<prestigeCost();
 document.getElementById("prestigeBtn").textContent="Prestige durchführen • "+fmt(prestigeCost());
 document.getElementById("gems").textContent=s.gems+" 💎";document.getElementById("researchPoints").textContent=fmt(s.researchPoints);
 }
+function buildingSynergy(i){let bonus=0;if(i>0&&s.levels[i-1]>0)bonus+=Math.min(.5,s.levels[i-1]*.01);if(i+1<defs.length&&unlocked(i+1)&&s.levels[i+1]>0)bonus+=Math.min(.25,s.levels[i+1]*.005);return 1+bonus}
 function renderBuildings(){
-document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock;return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult())+'/s':'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button type="button" class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
+document.getElementById("buildings").innerHTML=defs.map((d,i)=>{let p=price(i),l=s.levels[i],ok=unlocked(i),need=regions[d.region].unlock,sy=buildingSynergy(i);return '<div class="building"><div><div class="bname">'+d.name+' <span style="color:#8e97aa">Lv.'+l+'</span></div><div class="desc">'+(ok?d.desc+' • +'+fmt(d.prod*totalMult()*sy)+'/s • Synergie ×'+sy.toFixed(2):'🔒 Freischaltung ab '+need+' Gebäude-Level')+'</div></div><button type="button" class="buy" data-i="'+i+'" '+(!ok||s.money<p?'disabled':'')+'>'+(!ok?'Gesperrt':fmt(p)+' kaufen')+'</button></div>'}).join("");
 }
 function renderSettings(){const el=document.getElementById("settingsList");if(!el)return;el.innerHTML='<div class="row"><div><b>Sounds</b><div class="small">Klick- und Kaufgeräusche aktivieren.</div></div><button class="secondary" data-setting="sound">' +(s.settings.sound?"An":"Aus")+'</button></div><div class="row"><div><b>Reset-Bestätigung</b><div class="small">Vor dem Löschen des Spielstands nachfragen.</div></div><button class="secondary" data-setting="confirmReset">' +(s.settings.confirmReset?"An":"Aus")+'</button></div><div class="row"><div><b>Spielstand</b><div class="small">Setzt den lokalen Spielstand vollständig zurück.</div></div><button class="quest-claim" id="settingsReset">Spielstand löschen</button></div>';el.querySelectorAll("[data-setting]").forEach(b=>b.onclick=()=>{const k=b.dataset.setting;s.settings[k]=!s.settings[k];save();renderSettings()});document.getElementById("settingsReset").onclick=()=>{if(!s.settings.confirmReset||confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}}}
 function render(){
