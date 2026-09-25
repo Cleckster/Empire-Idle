@@ -45,14 +45,14 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .tab:hover{color:#fff;background:#ffffff08}
 .tab.active{background:linear-gradient(135deg,#7567ff,#5d51df);box-shadow:0 5px 18px #6f61ff44}
 .tabpage{min-height:0;flex:1;overflow:hidden}
-#game{display:grid;grid-template-rows:auto 172px minmax(0,1fr);row-gap:10px;min-height:0}
+#game{display:flex;flex-direction:column}
 #game>.panel{flex:0 0 auto;margin-bottom:10px;padding:11px 15px;border-radius:14px}
 .grid{min-height:0;flex:1;grid-template-columns:minmax(300px,.72fr) minmax(430px,1fr) minmax(330px,.82fr);gap:12px;align-items:stretch}
-.big{height:auto;min-height:0;padding:20px;position:relative;overflow:hidden}
+.big{height:100%;min-height:0;padding:20px;position:relative;overflow:hidden}
 .big:before{content:"";position:absolute;width:300px;height:300px;top:35%;left:50%;transform:translate(-50%,-50%);background:#7667ff18;border-radius:50%;filter:blur(35px);pointer-events:none}
 .coin{position:relative;z-index:1;transform:none;width:min(360px,78%);margin:0 auto;height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
-.coin:before{content:"EMPIRE";position:absolute;inset:0;display:grid;place-items:center;font-size:28px;letter-spacing:.28em;font-weight:900;color:#f2f4ff;text-shadow:0 0 18px #8d80ff88;pointer-events:none}
-.coin:after{content:"CLICK TO EARN";position:absolute;left:0;right:0;bottom:17px;text-align:center;font-size:9px;letter-spacing:.28em;font-weight:800;color:#8995ad;pointer-events:none}
+.coin:before{content:"EMPIRE";position:absolute;inset:0 0 18px;display:grid;place-items:center;font-size:28px;letter-spacing:.28em;font-weight:900;color:#f2f4ff;text-shadow:0 0 18px #8d80ff88;pointer-events:none}
+.coin:after{content:"CLICK TO EARN";position:absolute;left:0;right:0;bottom:12px;text-align:center;font-size:9px;letter-spacing:.28em;font-weight:800;color:#8995ad;pointer-events:none}
 .coin:hover{transform:none;border-color:#7166d9;box-shadow:0 22px 55px #000b,0 0 30px #7065ff25,inset 0 1px #ffffff18}
 .coin:active{transform:scale(.985);box-shadow:0 10px 25px #0009,inset 0 5px 18px #0008}
 .coin:focus-visible{outline:2px solid #9d94ff;outline-offset:4px}
