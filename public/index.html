@@ -47,8 +47,8 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .tabpage{min-height:0;flex:1;overflow:hidden}
 #game{display:flex;flex-direction:column}
 #game>.panel{flex:0 0 auto;margin-bottom:10px;padding:11px 15px;border-radius:14px}
-.grid{min-height:0;flex:1;grid-template-columns:minmax(300px,.72fr) minmax(430px,1fr) minmax(330px,.82fr);gap:12px}
-.big{height:100%;min-height:0;padding:20px;position:relative;overflow:hidden}
+.grid{min-height:0;flex:1;grid-template-columns:minmax(300px,.72fr) minmax(430px,1fr) minmax(330px,.82fr);gap:12px;align-items:stretch}
+.big{height:auto;min-height:0;padding:20px;position:relative;overflow:hidden}
 .big:before{content:"";position:absolute;width:300px;height:300px;top:35%;left:50%;transform:translate(-50%,-50%);background:#7667ff18;border-radius:50%;filter:blur(35px);pointer-events:none}
 .coin{position:relative;z-index:1;transform:none;width:min(360px,78%);margin:0 auto;height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
 .coin:before{content:"EMPIRE";position:absolute;inset:0;display:grid;place-items:center;font-size:28px;letter-spacing:.28em;font-weight:900;color:#f2f4ff;text-shadow:0 0 18px #8d80ff88;pointer-events:none}
@@ -61,7 +61,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .secondary{background:#161d2c;border:1px solid #2a354c;color:#cfd6e5;transition:.2s}
 .secondary:hover{background:#202a3d;border-color:#3b4964}
 .notice{position:relative;z-index:1;margin-top:9px;min-height:16px}
-.grid>div:nth-child(2),.grid>div:nth-child(3){min-height:0;display:flex;flex-direction:column}
+.grid>div:nth-child(1),.grid>div:nth-child(2),.grid>div:nth-child(3){min-width:0;min-height:0;display:flex;flex-direction:column}
 .buildings{min-height:0;flex:1;overflow-y:auto;padding-right:3px;scrollbar-width:thin;scrollbar-color:#38435b transparent}
 .building{padding:12px 14px;border-radius:13px;box-shadow:0 8px 24px #0004}
 .building:hover{border-color:#3a4662;transform:translateY(-1px)}
@@ -123,7 +123,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .empire-progress{position:relative;z-index:2;display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:11px;color:#8995ad}
 @keyframes empireRise{0%{transform:translateY(55px) scale(.65);opacity:0}55%{transform:translateY(-5px) scale(1.03);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
 @media(max-width:900px){.empire-visual{min-height:165px;height:165px}.empire-scene{height:116px;justify-content:flex-start}.empire-building{min-width:52px}}
-.building-panel,.empire-panel{overflow:hidden}.empire-panel{overflow:hidden}.building-panel{min-height:0;display:flex;flex-direction:column}.building-panel .buildings{flex:1}.empire-panel .prestige{padding:12px!important}.empire-side-row{padding:10px 0;border-bottom:1px solid #202738}.empire-side-row:last-child{border-bottom:0}.grid{overflow:hidden}.grid>div{min-width:0}.grid>.big{overflow:hidden}.empire-visual{flex:0 0 172px}.empire-panel{min-height:0}\n/* ===== Interaction FX ===== */
+.building-panel,.empire-panel{overflow:hidden}.empire-panel{display:flex;flex-direction:column}.empire-panel #empireSideInfo{flex:0 0 auto}.building-panel{min-height:0;display:flex;flex-direction:column}.building-panel .buildings{flex:1}.empire-panel .prestige{padding:10px!important;margin-top:auto!important}.empire-side-row{padding:7px 0;border-bottom:1px solid #202738}.empire-side-row:last-child{border-bottom:0}.grid{overflow:hidden}.grid>div{min-width:0}.grid>.big{overflow:hidden}.empire-visual{flex:0 0 172px}.empire-panel{min-height:0}.empire-panel .prestige button{padding:9px 12px}\n/* ===== Interaction FX ===== */
 .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
 .click-particle{position:absolute;width:7px;height:7px;border-radius:50%;background:#9d91ff;box-shadow:0 0 12px #8b7dff;animation:particleFly .65s ease-out forwards}
 @keyframes particleFly{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.15);opacity:0}}
