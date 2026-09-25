@@ -45,7 +45,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .tab:hover{color:#fff;background:#ffffff08}
 .tab.active{background:linear-gradient(135deg,#7567ff,#5d51df);box-shadow:0 5px 18px #6f61ff44}
 .tabpage{min-height:0;flex:1;overflow:hidden}
-#game{display:flex;flex-direction:column}
+#game{display:grid;grid-template-rows:auto 172px minmax(0,1fr);row-gap:10px;min-height:0}
 #game>.panel{flex:0 0 auto;margin-bottom:10px;padding:11px 15px;border-radius:14px}
 .grid{min-height:0;flex:1;grid-template-columns:minmax(300px,.72fr) minmax(430px,1fr) minmax(330px,.82fr);gap:12px;align-items:stretch}
 .big{height:auto;min-height:0;padding:20px;position:relative;overflow:hidden}
@@ -71,6 +71,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .buy:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px #6558e755}
 .prestige{flex:0 0 auto;padding:12px 14px!important;margin-top:8px!important}
 @media(max-width:1100px){
+ #game{display:block}
  .wrap{height:auto;min-height:100vh;overflow:visible;padding:18px 14px}
  .tabpage{overflow:visible}
  #game{display:block}
@@ -87,7 +88,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
  .coin{width:170px;height:170px}
 }
 /* ===== Empire Visual ===== */
-.empire-visual{position:relative;min-height:172px;height:172px;margin:0 0 10px;padding:12px 14px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#111a2c 0%,#0a0f1b 72%);border:1px solid #29354d;box-shadow:inset 0 1px #ffffff08,0 12px 30px #0005}
+.empire-visual{position:relative;min-height:172px;height:172px;margin:0;padding:12px 14px;border-radius:16px;overflow:hidden;background:linear-gradient(180deg,#111a2c 0%,#0a0f1b 72%);border:1px solid #29354d;box-shadow:inset 0 1px #ffffff08,0 12px 30px #0005}
 .empire-sky{position:absolute;inset:0;background:radial-gradient(circle at 76% 22%,#7567ff22 0,transparent 20%),radial-gradient(circle at 20% 18%,#6b7cff14 0,transparent 24%);pointer-events:none}
 .empire-stars{position:absolute;inset:0;opacity:.7;background-image:radial-gradient(circle,#ffffff88 1px,transparent 1px);background-size:73px 61px;pointer-events:none}
 .empire-title{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
