@@ -217,24 +217,27 @@ const clickCritCost=()=>Math.floor(500*Math.pow(3.8,s.clickCritLevel));
 const clickComboCost=()=>Math.floor(1500*Math.pow(4,s.clickComboLevel));
 const clickCriticalChance=()=>Math.min(.25,.02+s.clickCritLevel*.025);
 const clickComboBonus=()=>1+s.clickComboLevel*.15;
-const clickValue=()=>s.clickPower*mult()*clickComboBonus();
+const clickValue=()=>s.clickPower*mult()*clickComboBonus()*regionClickMult();
 const boost=()=>Date.now()<s.boostUntil?2:1;
 const regions=[
-{name:"Kernland",unlock:0,mult:1},
-{name:"Handelsbund",unlock:20,mult:1.5},
-{name:"Weltmetropole",unlock:50,mult:2.5},
-{name:"Orbitalzone",unlock:100,mult:5},
-{name:"Galaktisches Reich",unlock:180,mult:8},
-{name:"Sternenbund",unlock:300,mult:13},
-{name:"Dimensionale Zone",unlock:500,mult:22}
+{name:"Kernland",unlock:0,prestige:0,mult:1,clickMult:1,xpMult:1,prestigeGems:0,bonus:"Grundlage des Imperiums"},
+{name:"Handelsbund",unlock:20,prestige:0,mult:1.5,clickMult:1.1,xpMult:1,prestigeGems:0,bonus:"+10% Klick-Einnahmen"},
+{name:"Weltmetropole",unlock:50,prestige:1,mult:2.5,clickMult:1,xpMult:1.15,prestigeGems:0,bonus:"+15% XP-Gewinn"},
+{name:"Orbitalzone",unlock:100,prestige:2,mult:5,clickMult:1.1,xpMult:1.1,prestigeGems:1,bonus:"+10% Klick & XP, +1 💎 bei Prestige"},
+{name:"Galaktisches Reich",unlock:180,prestige:3,mult:8,clickMult:1.2,xpMult:1.15,prestigeGems:2,bonus:"+20% Klick, +15% XP, +2 💎 bei Prestige"},
+{name:"Sternenbund",unlock:300,prestige:5,mult:13,clickMult:1.25,xpMult:1.25,prestigeGems:3,bonus:"+25% Klick & XP, +3 💎 bei Prestige"},
+{name:"Dimensionale Zone",unlock:500,prestige:8,mult:22,clickMult:1.5,xpMult:1.4,prestigeGems:5,bonus:"+50% Klick, +40% XP, +5 💎 bei Prestige"}
 ];
 const totalLevels=()=>s.levels.reduce((a,b)=>a+b,0);
-const regionForLevels=()=>Math.min(regions.length-1,regions.reduce((best,r,i)=>totalLevels()>=r.unlock?i:best,0));
+const regionUnlocked=(i)=>{const r=regions[i];return totalLevels()>=r.unlock&&s.prestige>=r.prestige};
+const regionForLevels=()=>Math.min(regions.length-1,regions.reduce((best,r,i)=>regionUnlocked(i)?i:best,0));
 const regionMult=()=>regions[regionForLevels()].mult;
+const regionClickMult=()=>regions[regionForLevels()].clickMult;
+const regionXpMult=()=>regions[regionForLevels()].xpMult;
 const eventMult=()=>{if(!s.event||Date.now()>=s.eventEnds)return 1;if(s.event==="Goldrausch")return 1.5;if(s.event==="Industrieboom")return 2;if(s.event==="Galaktischer Handel")return 2.5;return 1};
 const totalMult=()=>mult()*boost()*regionMult()*researchMult()*eventMult();
 const xpNeeded=()=>Math.floor(100*Math.pow(1.22,s.level-1));
-function gainXP(n){s.xp+=Math.max(0,n);while(s.xp>=xpNeeded()){s.xp-=xpNeeded();s.level++;s.quests.level=Math.max(s.quests.level||0,s.level);if(s.level%5===0)s.gems+=2}}
+function gainXP(n){s.xp+=Math.max(0,n)*regionXpMult();while(s.xp>=xpNeeded()){s.xp-=xpNeeded();s.level++;s.quests.level=Math.max(s.quests.level||0,s.level);if(s.level%5===0)s.gems+=2}}
 const shopItems=[{name:"2× Produktion",desc:"Verdoppelt Einkommen für 5 Minuten.",cost:10,action:()=>{if(s.gems>=10){s.gems-=10;s.boostUntil=Math.max(Date.now(),s.boostUntil)+300000;save();render()}}},{name:"Kapital-Spritze",desc:"Sofort 60 Sekunden deines aktuellen Einkommens.",cost:8,action:()=>{if(s.gems>=8){s.gems-=8;s.money+=income()*60;save();render()}}},{name:"VIP-Farbe",desc:"Schaltet einen goldenen VIP-Look frei.",cost:30,action:()=>{if(s.gems>=30){s.gems-=30;s.theme="vip";document.body.classList.add("vip");save();render()}}}];
 const prestigeCost=()=>Math.floor(1000000*Math.pow(5,s.prestige));
 const price=(i)=>Math.floor(defs[i].base*Math.pow(1.16,s.levels[i]));
@@ -265,7 +268,7 @@ document.getElementById("xpInfo").textContent=fmt(s.xp)+" / "+fmt(xpNeeded())+" 
 document.getElementById("regionName").textContent=rr.name;
 document.getElementById("regionMult").textContent="×"+rr.mult;document.getElementById("buildingLevelTotal").textContent=totalLevels()+" Gebäude-Level";
 const side=document.getElementById("empireSideInfo");if(side)side.innerHTML="<div class=\"empire-side-row\"><b>"+totalLevels()+" Gebäude-Level</b><div class=\"small\">"+s.levels.filter(v=>v>0).length+" verschiedene Gebäude errichtet</div></div><div class=\"empire-side-row\"><b>"+fmt(income())+" / Sekunde</b><div class=\"small\">Aktuelle Gesamtproduktion</div></div><div class=\"empire-side-row\"><b>"+regions[ri].name+"</b><div class=\"small\">Region ×"+rr.mult+"</div></div>";
-document.getElementById("regionInfo").textContent=ri===regions.length-1?"Maximale Region erreicht.":(regions[ri+1].unlock-totalLevels())+" Gebäude-Level bis "+regions[ri+1].name;
+document.getElementById("regionInfo").textContent=ri===regions.length-1?"MAX • "+rr.bonus:(rr.bonus+" • Anforderung: "+rr.unlock+" Gebäude-Level"+(rr.prestige?" + Prestige "+rr.prestige:"")+" • Nächste: "+regions[ri+1].name+" ab "+regions[ri+1].unlock+" Level"+(regions[ri+1].prestige?" + P"+regions[ri+1].prestige:""));
 document.getElementById("clickInfo").textContent="+"+fmt(clickValue())+" pro Klick";
 document.getElementById("clickUpgradeInfo").textContent="Kraft Lv."+s.clickUpgrades+" • Kritisch "+Math.round(clickCriticalChance()*100)+"% • Combo +"+Math.round((clickComboBonus()-1)*100)+"%";
 document.getElementById("clickUpgradeBtn").disabled=s.money<clickUpgradeCost();
@@ -328,7 +331,7 @@ document.getElementById("clickComboBtn").onclick=()=>{const cost=clickComboCost(
 document.getElementById("click").onclick=(e)=>{const critical=Math.random()<clickCriticalChance();const value=clickValue()*(critical?5:1);s.money+=value;gainXP(value);s.clicks++;s.quests.click=s.clicks;s.quests.earn+=value;s.contracts.click=(s.contracts.click||0)+1;save();updateStats();renderQuests();renderAchievements();clickSound();spawnClickFX(e.clientX,e.clientY,value,critical)};
 document.getElementById("save").onclick=save;
 document.getElementById("reset").onclick=()=>{if(!s.settings.confirmReset||confirm("Spielstand wirklich löschen?")){localStorage.removeItem(key);location.reload()}};
-document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=prestigeCost()){s.prestige++;s.quests.prestige=(s.quests.prestige||0)+1;s.money=0;s.gems+=5;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);s.clickPower=1;s.clickUpgrades=0;s.clickCritLevel=0;s.clickComboLevel=0;s.researchPoints+=Math.floor(5+s.prestige*2);s.research={};save();render()}};
+document.getElementById("prestigeBtn").onclick=()=>{if(s.money>=prestigeCost()){s.prestige++;s.quests.prestige=(s.quests.prestige||0)+1;s.money=0;s.gems+=5+regions[regionForLevels()].prestigeGems;s.xp=0;s.level=1;s.levels=Array(defs.length).fill(0);s.clickPower=1;s.clickUpgrades=0;s.clickCritLevel=0;s.clickComboLevel=0;s.researchPoints+=Math.floor(5+s.prestige*2);s.research={};save();render()}};
 const away=Math.max(0,Math.min((Date.now()-(s.last||Date.now()))/1000,8*3600));if(away>10){s.money+=income()*away;document.getElementById("offline").textContent="Offline verdient: +"+fmt(income()*away)}
 dailyReward();maybeEvent();if(s.theme==="vip")document.body.classList.add("vip");
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".tabpage").forEach(x=>x.style.display="none");b.classList.add("active");const page=document.getElementById(b.dataset.tab);page.style.display=b.dataset.tab==="game"?"flex":"block";});
