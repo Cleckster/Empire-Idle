@@ -31,7 +31,7 @@ h1{font-size:42px;margin:0;background:linear-gradient(90deg,#fff,#9c8cff);-webki
 :root{--bg:#070a11;--panel:rgba(17,22,36,.78);--line:#29334a;--muted:#8d98ad;--accent:#7c6cff}
 html,body{min-height:100%;background:radial-gradient(circle at 50% -15%,#202050 0,#0b0e18 34%,#070a11 72%);background-attachment:fixed}
 body{overflow-x:hidden}
-.wrap{width:min(1280px,100%);height:100vh;max-width:none;margin:auto;padding:16px 22px;display:flex;flex-direction:column;overflow:hidden}
+.wrap{width:min(1600px,100%);height:100vh;max-width:none;margin:auto;padding:16px 22px;display:flex;flex-direction:column;overflow:hidden}
 .hero{flex:0 0 auto;margin-bottom:12px;align-items:center}
 h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .sub{font-size:13px}
@@ -47,7 +47,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .tabpage{min-height:0;flex:1;overflow:hidden}
 #game{display:flex;flex-direction:column}
 #game>.panel{flex:0 0 auto;margin-bottom:10px;padding:11px 15px;border-radius:14px}
-.grid{min-height:0;flex:1;grid-template-columns:minmax(390px,.82fr) minmax(500px,1.18fr);gap:12px}
+.grid{min-height:0;flex:1;grid-template-columns:minmax(300px,.72fr) minmax(430px,1fr) minmax(330px,.82fr);gap:12px}
 .big{height:100%;min-height:0;padding:20px;position:relative;overflow:hidden}
 .big:before{content:"";position:absolute;width:300px;height:300px;top:35%;left:50%;transform:translate(-50%,-50%);background:#7667ff18;border-radius:50%;filter:blur(35px);pointer-events:none}
 .coin{position:relative;z-index:1;transform:none;width:min(360px,78%);margin:0 auto;height:118px;border-radius:24px;font-size:0;letter-spacing:0;color:transparent;background:linear-gradient(145deg,#171d31,#0d1220);border:1px solid #39445d;box-shadow:0 18px 45px #0009,inset 0 1px #ffffff12,inset 0 -8px 20px #0005;transition:transform .12s,box-shadow .2s,border-color .2s;overflow:hidden}
@@ -61,7 +61,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .secondary{background:#161d2c;border:1px solid #2a354c;color:#cfd6e5;transition:.2s}
 .secondary:hover{background:#202a3d;border-color:#3b4964}
 .notice{position:relative;z-index:1;margin-top:9px;min-height:16px}
-.grid>div:last-child{min-height:0;display:flex;flex-direction:column}
+.grid>div:nth-child(2),.grid>div:nth-child(3){min-height:0;display:flex;flex-direction:column}
 .buildings{min-height:0;flex:1;overflow-y:auto;padding-right:3px;scrollbar-width:thin;scrollbar-color:#38435b transparent}
 .building{padding:12px 14px;border-radius:13px;box-shadow:0 8px 24px #0004}
 .building:hover{border-color:#3a4662;transform:translateY(-1px)}
@@ -70,7 +70,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .buy{min-width:132px;padding:11px 15px;background:linear-gradient(135deg,#7b6cff,#5d51df);box-shadow:0 6px 16px #6558e733;transition:.18s}
 .buy:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 8px 20px #6558e755}
 .prestige{flex:0 0 auto;padding:12px 14px!important;margin-top:8px!important}
-@media(max-width:900px){
+@media(max-width:1100px){
  .wrap{height:auto;min-height:100vh;overflow:visible;padding:18px 14px}
  .tabpage{overflow:visible}
  #game{display:block}
@@ -121,7 +121,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 .empire-progress{position:relative;z-index:2;display:flex;justify-content:space-between;gap:8px;margin-top:8px;font-size:11px;color:#8995ad}
 @keyframes empireRise{0%{transform:translateY(55px) scale(.65);opacity:0}55%{transform:translateY(-5px) scale(1.03);opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
 @media(max-width:900px){.empire-visual{min-height:165px;height:165px}.empire-scene{height:116px;justify-content:flex-start}.empire-building{min-width:52px}}
-/* ===== Interaction FX ===== */
+.building-panel,.empire-panel{overflow:hidden}.empire-panel{overflow-y:auto}.building-panel{min-height:0;display:flex;flex-direction:column}.building-panel .buildings{flex:1}.empire-panel .prestige{padding:12px!important}.empire-side-row{padding:10px 0;border-bottom:1px solid #202738}.empire-side-row:last-child{border-bottom:0}\n/* ===== Interaction FX ===== */
 .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
 .click-particle{position:absolute;width:7px;height:7px;border-radius:50%;background:#9d91ff;box-shadow:0 0 12px #8b7dff;animation:particleFly .65s ease-out forwards}
 @keyframes particleFly{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.15);opacity:0}}
@@ -145,7 +145,7 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 <div class="nav"><button class="tab active" data-tab="game">Imperium</button><button class="tab" data-tab="quests">Quests</button><button class="tab" data-tab="achievements">Achievements</button><button class="tab" data-tab="shop">Shop</button><button class="tab" data-tab="research">Forschung</button><button class="tab" data-tab="events">Events</button><button class="tab" data-tab="settings">⚙ Einstellungen</button></div>
 <div id="game" class="tabpage"><div class="panel"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><div class="label">Aktive Region</div><b id="regionName">Kernland</b><div class="small" id="regionInfo"></div></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end"><span class="pill" id="buildingLevelTotal">0 Gebäude-Level</span><span class="pill" id="regionMult">×1</span></div></div></div><div class="empire-visual" id="empireVisual"></div><section class="grid">
 <div class="card big"><div style="position:relative;z-index:1;text-align:center;margin-bottom:8px"><div class="label">Deine Wirtschaft</div><div class="small">Klicke, um dein Imperium zu beschleunigen</div></div><button type="button" class="coin" id="click">VERDIENEN</button><div class="income" id="clickInfo">+1 pro Klick</div><div class="click-upgrade"><div><div class="label">Klick-Upgrades</div><div class="small" id="clickUpgradeInfo">Kraft Lv.0</div></div><div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end"><button class="buy" id="clickUpgradeBtn">100 • Kraft</button><button class="buy" id="clickCritBtn">500 • Krit</button><button class="buy" id="clickComboBtn">1.500 • Combo</button></div></div><div class="actions"><button class="secondary" id="save">Speichern</button><button class="secondary" id="reset">Reset</button></div><div class="notice" id="offline"></div></div>
-<div><div class="buildings" id="buildings"></div><div class="card prestige" style="margin-top:10px"><div class="label">Prestige</div><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin:7px 0 5px"><b>Prestige-Level <span id="prestigeLevel">0</span></b><span class="pill" id="prestigeMult">×1,00</span></div><div class="small" style="margin-bottom:10px">Nächstes Prestige: <span class="gold" id="prestigeCost">1,00M</span> Geld</div><div style="margin:0 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren. Die Kosten steigen exponentiell mit jedem Prestige.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
+<div class="card building-panel"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div class="label">Gebäude</div><div class="small">Baue dein Empire Schritt für Schritt aus.</div></div><span class="pill">Investitionen</span></div><div class="buildings" id="buildings"></div></div><div class="card empire-panel"><div class="label">Empire Übersicht</div><div class="small" style="margin-top:4px">Dein Fortschritt vom Bergwerk bis zum Multiversum.</div><div id="empireSideInfo" style="margin-top:12px"></div><div class="card prestige" style="margin-top:12px"><div class="label">Prestige</div><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin:7px 0 5px"><b>Prestige-Level <span id="prestigeLevel">0</span></b><span class="pill" id="prestigeMult">×1,00</span></div><div class="small" style="margin-bottom:10px">Nächstes Prestige: <span class="gold" id="prestigeCost">1,00M</span> Geld</div><div style="margin:0 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>" style="margin-top:10px"><div class="label">Prestige</div><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;margin:7px 0 5px"><b>Prestige-Level <span id="prestigeLevel">0</span></b><span class="pill" id="prestigeMult">×1,00</span></div><div class="small" style="margin-bottom:10px">Nächstes Prestige: <span class="gold" id="prestigeCost">1,00M</span> Geld</div><div style="margin:0 0 12px">Setzt dein Geld und Gebäude zurück und gibt dir dauerhafte Multiplikatoren. Die Kosten steigen exponentiell mit jedem Prestige.</div><button class="buy" id="prestigeBtn">Prestige durchführen</button></div></div>
 </section></div>
 <div id="quests" class="tabpage" style="display:none"><div class="panel"><div class="label">Tagesquests</div><div id="questsList"></div></div></div>
 <div id="achievements" class="tabpage" style="display:none"><div class="panel"><div class="label">Meilensteine</div><div id="achievementsList"></div></div></div>
@@ -260,7 +260,7 @@ const ri=regionForLevels(),rr=regions[ri];
 document.getElementById("level").textContent=s.level;
 document.getElementById("xpInfo").textContent=fmt(s.xp)+" / "+fmt(xpNeeded())+" XP";
 document.getElementById("regionName").textContent=rr.name;
-document.getElementById("regionMult").textContent="×"+rr.mult;document.getElementById("buildingLevelTotal").textContent=totalLevels()+" Gebäude-Level";
+document.getElementById("regionMult").textContent="×"+rr.mult;document.getElementById("buildingLevelTotal").textContent=totalLevels()+" Gebäude-Level";\nconst side=document.getElementById("empireSideInfo");if(side)side.innerHTML="<div class=\"empire-side-row\"><b>"+totalLevels()+" Gebäude-Level</b><div class=\"small\">"+s.levels.filter(v=>v>0).length+" verschiedene Gebäude errichtet</div></div><div class=\"empire-side-row\"><b>"+fmt(income())+" / Sekunde</b><div class=\"small\">Aktuelle Gesamtproduktion</div></div><div class=\"empire-side-row\"><b>"+regions[ri].name+"</b><div class=\"small\">Region ×"+rr.mult+"</div></div>";
 document.getElementById("regionInfo").textContent=ri===regions.length-1?"Maximale Region erreicht.":(regions[ri+1].unlock-totalLevels())+" Gebäude-Level bis "+regions[ri+1].name;
 document.getElementById("clickInfo").textContent="+"+fmt(clickValue())+" pro Klick";
 document.getElementById("clickUpgradeInfo").textContent="Kraft Lv."+s.clickUpgrades+" • Kritisch "+Math.round(clickCriticalChance()*100)+"% • Combo +"+Math.round((clickComboBonus()-1)*100)+"%";
