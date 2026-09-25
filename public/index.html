@@ -126,11 +126,11 @@ h1{font-size:36px;letter-spacing:-.04em;text-shadow:0 0 28px #8174ff33}
 @media(max-width:900px){.empire-visual{min-height:165px;height:165px}.empire-scene{height:116px;justify-content:flex-start}.empire-building{min-width:52px}}
 .building-panel,.empire-panel{overflow:hidden}.empire-panel{display:flex;flex-direction:column}.empire-panel #empireSideInfo{flex:0 0 auto}.building-panel{min-height:0;display:flex;flex-direction:column}.building-panel .buildings{flex:1}.empire-panel .prestige{padding:10px!important;margin-top:auto!important}.empire-side-row{padding:7px 0;border-bottom:1px solid #202738}.empire-side-row:last-child{border-bottom:0}.grid{overflow:hidden}.grid>div{min-width:0}.grid>.big{overflow:hidden}.empire-visual{flex:0 0 172px}.empire-panel{min-height:0}.empire-panel .prestige button{padding:9px 12px}\n/* ===== Interaction FX ===== */
 .fx-layer{position:fixed;inset:0;pointer-events:none;z-index:2147483647;overflow:visible;transform:translateZ(0)}
-.click-particle{position:fixed;z-index:2147483647;width:7px;height:7px;border-radius:50%;background:#9d91ff;box-shadow:0 0 12px #8b7dff;animation:particleFly .65s ease-out forwards}
+.click-particle{pointer-events:none;position:fixed;z-index:2147483647;width:7px;height:7px;border-radius:50%;background:#9d91ff;box-shadow:0 0 12px #8b7dff;animation:particleFly .65s ease-out forwards}
 @keyframes particleFly{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.15);opacity:0}}
-.click-float{position:fixed;z-index:2147483647;color:#fff;font-weight:900;font-size:16px;text-shadow:0 0 14px #8c7fff;animation:floatUp .7s ease-out forwards}
+.click-float{pointer-events:none;position:fixed;z-index:2147483647;color:#fff;font-weight:900;font-size:16px;text-shadow:0 0 14px #8c7fff;animation:floatUp .7s ease-out forwards}
 @keyframes floatUp{from{transform:translate(-50%,0) scale(.8);opacity:0}20%{opacity:1}to{transform:translate(-50%,-55px) scale(1.15);opacity:0}}
-.click-ring{position:fixed;z-index:2147483647;width:30px;height:30px;border:2px solid #9d91ff;border-radius:50%;transform:translate(-50%,-50%);animation:ring .5s ease-out forwards}
+.click-ring{pointer-events:none;position:fixed;z-index:2147483647;width:30px;height:30px;border:2px solid #9d91ff;border-radius:50%;transform:translate(-50%,-50%);animation:ring .5s ease-out forwards}
 @keyframes ring{to{width:190px;height:190px;opacity:0;border-width:1px}}
 .buy-pulse{animation:buyPulse .42s ease-out}
 @keyframes buyPulse{0%{box-shadow:0 0 0 0 #8b7dff88}45%{box-shadow:0 0 0 12px #8b7dff22,0 0 30px #8b7dff88}100%{box-shadow:0 0 0 25px #8b7dff00}}
